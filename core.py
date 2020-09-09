@@ -18,6 +18,7 @@ from WebCrawler import mgstage
 from WebCrawler import xcity
 from WebCrawler import javlib
 from WebCrawler import dlsite
+from WebCrawler import avent
 
 
 def escape_path(path, escape_literals: str):  # Remove escape literals
@@ -48,6 +49,7 @@ def get_data_from_json(file_number, filepath, conf: config.Config):  # 从JSON�
     """
 
     func_mapping = {
+        "avent": avent.main,
         "avsox": avsox.main,
         "fc2": fc2fans_club.main,
         "fanza": fanza.main,
@@ -108,6 +110,8 @@ def get_data_from_json(file_number, filepath, conf: config.Config):  # 从JSON�
         return
 
     # ================================================网站规则添加结束================================================
+
+    print(json_data)
 
     title = json_data['title']
     actor_list = str(json_data['actor']).strip("[ ]").replace("'", '').split(',')  # 字符串转列表
