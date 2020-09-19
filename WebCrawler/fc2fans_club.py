@@ -39,7 +39,7 @@ def getRelease(htmlcode2): #
 def getCover(htmlcode,number,htmlcode2): #获取厂商 #
     #a = ADC_function.get_html('http://adult.contents.fc2.com/article_search.php?id=' + str(number).lstrip("FC2-").lstrip("fc2-").lstrip("fc2_").lstrip("fc2-") + '&utm_source=aff_php&utm_medium=source_code&utm_campaign=from_aff_php')
     html = etree.fromstring(htmlcode2, etree.HTMLParser())
-    result = str(html.xpath('//*[@id="container"]/div[1]/div/article/section[1]/div/div[1]/a/img/@src')).strip(" ['']")
+    result = str(html.xpath('//*[@class="items_article_MainitemThumb"]/span/img/@src')).strip(" ['']")
     if result == '':
         html = etree.fromstring(htmlcode, etree.HTMLParser())
         result2 = str(html.xpath('//*[@id="slider"]/ul[1]/li[1]/img/@src')).strip(" ['']")
@@ -86,6 +86,11 @@ def getRelease_fc2com(htmlcode2): #
     html=etree.fromstring(htmlcode2,etree.HTMLParser())
     result = str(html.xpath('//*[@id="container"]/div[1]/div/article/section[1]/div/div[2]/dl/dd[4]/text()')).strip(" ['']")
     return result
+def getCover_javdb(number):
+    html = ADC_function.get_html('https://javdb.com/search?q='+number+'&f=all')
+    html = etree.fromstring(html, etree.HTMLParser())
+    result = html.xpath('//*[@class="item-image"]/img/@data-src')[0]
+    return result
 def getCover_fc2com(htmlcode2): #获取厂商 #
     html = etree.fromstring(htmlcode2, etree.HTMLParser())
     result = str(html.xpath('//*[@id="top"]/div[1]/section[1]/div/section/div[1]/span/img/@src')).strip(" ['']")
@@ -112,7 +117,7 @@ def main(number):
         htmlcode = ADC_function.get_html('https://fc2club.com//html/FC2-' + number + '.html')
         actor = getActor(htmlcode)
         if getActor(htmlcode) == '':
-            actor = 'FC2系列'
+            actor = '素人'
         dic = {
             'title':    getTitle(htmlcode),
             'studio':   getStudio(htmlcode),
@@ -124,7 +129,7 @@ def main(number):
             'release':  getRelease(number),
             'number':  'FC2-'+number,
             'label': '',
-            'cover':    getCover(htmlcode,number,htmlcode2),
+            'cover':    getCover_javdb(number),
             'imagecut': 0,
             'tag':      getTag(htmlcode),
             'actor_photo':'',

@@ -21,6 +21,25 @@ def getActor(a): #//*[@id="center_column"]/div[2]/div[1]/div/table/tbody/tr[1]/t
     result1=str(html.xpath('//th[contains(text(),"出演：")]/../td/a/text()')).strip(" ['']").strip('\\n    ').strip('\\n')
     result2=str(html.xpath('//th[contains(text(),"出演：")]/../td/text()')).strip(" ['']").strip('\\n    ').strip('\\n')
     return str(result1+result2).strip('+').replace("', '",'').replace('"','').replace('/',',')
+
+def getActor_Real(number):
+    htmlcode = get_html('https://seesaawiki.jp/av_neme/search?keywords=' + number, return_type = "object")
+    htmlcode.encoding = 'euc-jp'
+    htmlcode = htmlcode.text
+    html = etree.fromstring(htmlcode, etree.HTMLParser())
+    name_list = html.xpath('//*[@class="keyword"]/a/text()')
+    print(f"Choose the actor name for {number} with the number:")
+    if len(name_list) != 0:
+        print(len(name_list))
+        for i in range(len(name_list)):
+            print(f'({i}) {name_list[i]}')
+
+        index = int(input(">>"))
+
+        return name_list[index]
+    else:
+        return ''
+
 def getStudio(a):
     html = etree.fromstring(a, etree.HTMLParser()) #//table/tr[1]/td[1]/text()
     result1=str(html.xpath('//th[contains(text(),"メーカー：")]/../td/a/text()')).strip(" ['']").strip('\\n    ').strip('\\n')
@@ -65,9 +84,14 @@ def getTag(a):
     result2 = str(html.xpath('//th[contains(text(),"ジャンル：")]/../td/text()')).strip(" ['']").strip('\\n    ').strip(
         '\\n')
     return str(result1 + result2).strip('+').replace("', '\\n",",").replace("', '","").replace('"','').replace(',,','').split(',')
+def getCover_javdb(number):
+    html = get_html('https://javdb.com/search?q='+number+'&f=all')
+    html = etree.fromstring(html, etree.HTMLParser())
+    result = html.xpath('//*[@class="item-image fix-scale-cover"]/img/@data-src')[0]
+    return result
 def getCover(htmlcode):
     html = etree.fromstring(htmlcode, etree.HTMLParser())
-    result = str(html.xpath('//*[@id="center_column"]/div[1]/div[1]/div/div/h2/img/@src')).strip(" ['']")
+    result = str(html.xpath('//*[@id="EnlargeImage"]/@href')).strip(" ['']")
     #                    /html/body/div[2]/article[2]/div[1]/div[1]/div/div/h2/img/@src
     return result
 def getDirector(a):
@@ -101,10 +125,11 @@ def main(number2):
         'outline': getOutline(b),
         'runtime': getRuntime(a),
         'director': getDirector(a),
-        'actor': getActor(a),
+        'actor': getActor_Real(number),
         'release': getRelease(a),
         'number': getNum(a),
         'cover': getCover(htmlcode),
+        'cover_small': getCover_javdb(number),
         'imagecut': 0,
         'tag': getTag(a),
         'label':getLabel(a),
@@ -119,4 +144,4 @@ def main(number2):
     #print(htmlcode)
 
 if __name__ == '__main__':
-    print(main('SIRO-4149'))
+    print(main('326EVA-117'))

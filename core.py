@@ -100,6 +100,8 @@ def get_data_from_json(file_number, filepath, conf: config.Config):  # 从JSON�
             # if any service return a valid return, break
             if get_data_state(json_data):
                 break
+            else:
+                print("OOps")
         except:
             break
 
@@ -110,8 +112,6 @@ def get_data_from_json(file_number, filepath, conf: config.Config):  # 从JSON�
         return
 
     # ================================================网站规则添加结束================================================
-
-    print(json_data)
 
     title = json_data['title']
     actor_list = str(json_data['actor']).strip("[ ]").replace("'", '').split(',')  # 字符串转列表

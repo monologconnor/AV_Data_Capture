@@ -10,6 +10,11 @@ from ADC_function import *
 # html = etree.fromstring(htmlcode, etree.HTMLParser())
 
 def main(number):
+    avsox_html = get_html('https://tellme.pw/avsox')
+    avsox_site = etree.HTML(avsox_html).xpath('//div[@class="container"]/div/a/@href')[0]
+    avsox_search = get_html(avsox_site + '/cn/search/' + number)
+    avsox_html = etree.fromstring(avsox_search, etree.HTMLParser())
+    avsox_result = str(avsox_html.xpath('//*[@id="waterfall"]/div/a/@href')).strip(" ['']")
     try:
         number = number.replace('-', '_')
         print(f"searching {number}")
@@ -144,6 +149,12 @@ def getSeries(html):
     result = html.xpath('//span[contains(text(), "シリーズ")]/../*[@class="value"]/a/text()')[0]
 
     return result
+
+def getCover_small_avsox(html):
+    pass 
+
+def getCover_avsox(html):
+    pass
 
 
 if __name__ == "__main__":

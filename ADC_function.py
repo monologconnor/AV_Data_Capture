@@ -6,6 +6,7 @@ import config
 SUPPORT_PROXY_TYPE = ("http", "socks5", "socks5h")
 
 def get_data_state(data: dict) -> bool:  # 元数据获取失败检测
+    print(data)
     if "title" not in data or "number" not in data:
         return False
 
