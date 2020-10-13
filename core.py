@@ -10,7 +10,7 @@ from ADC_function import *
 # =========website========
 from WebCrawler import avsox
 from WebCrawler import fanza
-from WebCrawler import fc2fans_club
+from WebCrawler import fc2
 from WebCrawler import jav321
 from WebCrawler import javbus
 from WebCrawler import javdb
@@ -45,13 +45,13 @@ def CreatFailedFolder(failed_folder):
 
 def get_data_from_json(file_number, filepath, conf: config.Config):  # 从JSON返回元数据
     """
-    iterate through all services and fetch the data
+    iterate through all services and fetch the data 
     """
 
     func_mapping = {
         "avent": avent.main,
         "avsox": avsox.main,
-        "fc2": fc2fans_club.main,
+        "fc2": fc2.main,
         "fanza": fanza.main,
         "javdb": javdb.main,
         "javbus": javbus.main,
