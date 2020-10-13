@@ -113,8 +113,7 @@ def getYear_fc2com(release):
 def main(number):
     try:
         number = number.replace('FC2-', '').replace('fc2-', '')
-        htmlcode2 = ADC_function.get_html('https://adult.contents.fc2.com/article/'+number+'/')
-        htmlcode = ADC_function.get_html('https://fc2club.com//html/FC2-' + number + '.html')
+        htmlcode = ADC_function.get_html('https://adult.contents.fc2.com/article/'+number+'/')
         actor = getActor(htmlcode)
         if getActor(htmlcode) == '':
             actor = '素人'
@@ -169,4 +168,4 @@ def main(number):
     return js
 
 if __name__ == '__main__':
-    print(main('1252953'))
+    print(main('1165533'))
