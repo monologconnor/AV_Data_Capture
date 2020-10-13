@@ -47,6 +47,11 @@ def getCover(htmlcode):  #获取封面链接
     doc = pq(htmlcode)
     image = doc('a.bigImage')
     return image.attr('href')
+def getCover_small(htmlcode):
+    html = etree.fromstring(htmlcode, etree.HTMLParser())
+    result =html.xpath("//*[@class='photo-frame']/img/@src")[0]
+    return result
+
 def getRelease(htmlcode): #获取出版日期
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     result = str(html.xpath('/html/body/div[5]/div[1]/div[2]/p[2]/text()')).strip(" ['']")
@@ -107,6 +112,11 @@ def getTag(htmlcode):  # 获取标签
         tag.append(translateTag_to_sc(i.get_text()))
     return tag
 
+def getThumb(htmlcode):
+    modified = cid.replace("00", '')
+    result = f"https://pics.dmm.co.jp/mono/movie/adult/{modified}/{modified}pl.jpg"
+    return result
+
 def main_uncensored(number):
     htmlcode = get_html('https://www.javbus.com/ja/' + number)
     if getTitle(htmlcode) == '':
@@ -128,7 +138,7 @@ def main_uncensored(number):
         'cover': getCover(htmlcode),
         'tag': getTag(htmlcode),
         'label': getSerise(htmlcode),
-        'imagecut': 0,
+        'imagecut': 3,
         'actor_photo': '',
         'website': 'https://www.javbus.com/ja/' + number,
         'source': 'javbus.py',
@@ -142,8 +152,11 @@ def main(number):
     try:
         try:
             htmlcode = get_html('https://www.javbus.com/' + number)
+            print("i got here")
+            cid = getCID(htmlcode)
+            search_html = get_html('https://www.javbus.com/search/' + number)
             try:
-                dww_htmlcode = fanza.main_htmlcode(getCID(htmlcode))
+                dww_htmlcode = fanza.main_htmlcode(cid)
             except:
                 dww_htmlcode = ''
             dic = {
@@ -157,7 +170,9 @@ def main(number):
                 'release': getRelease(htmlcode),
                 'number': getNum(htmlcode),
                 'cover': getCover(htmlcode),
-                'imagecut': 1,
+                'cover_small': getCover_small(search_html),
+                'thumb': getThumb(cid),
+                'imagecut': 3,
                 'tag': getTag(htmlcode),
                 'label': getSerise(htmlcode),
                 'actor_photo': getActorPhoto(htmlcode),
@@ -165,6 +180,7 @@ def main(number):
                 'source': 'javbus.py',
                 'series': getSerise(htmlcode),
             }
+            
             js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4,
                             separators=(',', ':'), )  # .encode('UTF-8')
             return js

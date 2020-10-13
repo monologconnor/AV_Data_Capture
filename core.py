@@ -68,7 +68,8 @@ def get_data_from_json(file_number, filepath, conf: config.Config):  # ä»ŽJSONè¿
     # if the input file name matches certain rules,
     # move some web service to the beginning of the list
     if "avsox" in sources and (re.match(r"^\d{5,}", file_number) or
-        "HEYZO" in file_number or "heyzo" in file_number or "Heyzo" in file_number
+        "HEYZO" in file_number or "heyzo" in file_number or "Heyzo" in file_number or
+        file_number.replace('-', '').replace('_', '').isdigit()
     ):
         # if conf.debug() == True:
         #     print('[+]select avsox')
