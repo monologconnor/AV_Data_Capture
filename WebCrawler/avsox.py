@@ -63,9 +63,15 @@ def getCover(htmlcode):
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     result = str(html.xpath('/html/body/div[2]/div[1]/div[1]/a/img/@src')).strip(" ['']")
     return result
-def getCover_small(htmlcode):
-    html = etree.fromstring(htmlcode, etree.HTMLParser())
-    result = str(html.xpath('//*[@id="waterfall"]/div/a/div[1]/img/@src')).strip(" ['']")
+def getCover_small(htmlcode, number):
+    javbus = get_html(f"https://www.javbus.com/{number}")
+    javbus = etree.fromstring(javbus, etree.HTMLParser())
+    result = javbus.xpath("//*[@class='sample-box']/@href")
+    if len(result) != 0:
+        result = result[0]
+    else:
+        html = etree.fromstring(htmlcode, etree.HTMLParser())
+        result = str(html.xpath('//*[@id="waterfall"]/div/a/div[1]/img/@src')).strip(" ['']")
     return result
 def getTag(a):  # 获取演员
     soup = BeautifulSoup(a, 'lxml')
@@ -74,6 +80,7 @@ def getTag(a):  # 获取演员
     for i in a:
         d.append(i.get_text())
     return d
+
 def getSeries(htmlcode):
     try:
         html = etree.fromstring(htmlcode, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
@@ -81,6 +88,28 @@ def getSeries(htmlcode):
         return result1
     except:
         return ''
+
+def getOutline(html):
+    result = html.xpath('//*[@class="product-description mt-20"]/p/text()')[0]
+
+    return result      
+
+def getProduct(html, number):
+    product_name = html.xpath('//*[@class="product-title"]/a/text()')
+    result = html.xpath('//*[@class="product-title"]/a/@href')
+    if len(product_name) > 1:
+        print(f"Multiple results found for {number}, choose one from them with the number:")
+        for i in range(len(product_name)):
+            print(f"({i}) {product_name[i]}")
+
+        index = int(input(">>"))
+    else:
+        index = 0
+    result = result[index]
+
+    return result
+
+
 
 def main(number):
     html = get_html('https://tellme.pw/avsox')
@@ -99,17 +128,25 @@ def main(number):
     web = get_html(result1)
     soup = BeautifulSoup(web, 'lxml')
     info = str(soup.find(attrs={'class': 'row movie'}))
+
+    hcode_search = get_html('https://www.aventertainments.com/ppv/ppv_searchproducts.aspx?languageID=2&vodtypeid=1&keyword=' + number)
+    html_search = etree.fromstring(hcode_search, etree.HTMLParser())
+    search_result = getProduct(html_search, number)
+    search_result = get_html(search_result)
+    search_result = etree.fromstring(search_result, etree.HTMLParser())
+
+
     dic = {
         'actor': getActor(web),
         'title': getTitle(web).strip(getNum(web)),
         'studio': getStudio(info),
-        'outline': '',#
+        'outline': getOutline(search_result),#
         'runtime': getRuntime(info),
         'director': '', #
         'release': getRelease(info),
         'number': getNum(info),
         'cover': getCover(web),
-        'cover_small': getCover_small(a),
+        'cover_small': getCover_small(a, number),
         'thumb': getCover(web),
         'imagecut': 3,
         'tag': getTag(web),
@@ -124,4 +161,4 @@ def main(number):
     return js
 
 if __name__ == "__main__":
-    print(main('012717_472'))
+    print(main('043020_001'))

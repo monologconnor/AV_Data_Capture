@@ -15,14 +15,14 @@ def getTitle_fc2com(htmlcode): #获取厂商
 def getActor_fc2com(htmlcode):
     try:
         html = etree.fromstring(htmlcode, etree.HTMLParser())
-        result = html.xpath('//*[@id="top"]/div[1]/section[1]/div/section/div[2]/ul/li[3]/a/text()')[0]
+        result = 'FC2 '+html.xpath('//*[@id="top"]/div[1]/section[1]/div/section/div[2]/ul/li[3]/a/text()')[0]
         return result
     except:
         return ''
 def getStudio_fc2com(htmlcode): #获取厂商
     try:
         html = etree.fromstring(htmlcode, etree.HTMLParser())
-        result = str(html.xpath('//*[@id="top"]/div[1]/section[1]/div/section/div[2]/ul/li[3]/a/text()')).strip(" ['']")
+        result = 'FC2 '+str(html.xpath('//*[@id="top"]/div[1]/section[1]/div/section/div[2]/ul/li[3]/a/text()')).strip(" ['']")
         return result
     except:
         return ''
@@ -66,7 +66,7 @@ def main(number):
         htmlcode2 = ADC_function.get_html('https://adult.contents.fc2.com/article/' + number + '/')
         actor = getActor_fc2com(htmlcode2)
         if getActor_fc2com(htmlcode2) == '':
-            actor = 'FC2系列'
+            actor = 'FC2 素人'
         dic = {
             'title': getTitle_fc2com(htmlcode2),
             'studio': getStudio_fc2com(htmlcode2),
