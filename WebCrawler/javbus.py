@@ -118,25 +118,60 @@ def getThumb(cid):
     result = f"https://pics.dmm.co.jp/mono/movie/adult/{modified}/{modified}pl.jpg"
     return result
 
+def getProduct_uncen(html, number):
+    product_name = html.xpath('//*[@class="product-title"]/a/text()')
+    result = html.xpath('//*[@class="product-title"]/a/@href')
+    if len(product_name) > 1:
+        print(f"Multiple results found for {number}, choose one from them with the number:")
+        for i in range(len(product_name)):
+            print(f"({i}) {product_name[i]}")
+
+        index = int(input(">>"))
+    else:
+        index = 0
+    result = result[index]
+
+    return result
+
+def getOutline_uncen(html):
+    result = html.xpath('//*[@class="product-description mt-20"]/p/text()')[0]
+
+    return result
+
+def getCover_small(html, number):
+    result = html.xpath("//*[@class='sample-box']/@href")
+    if len(result) != 0:
+        result = result[0]
+    else:
+        html = f"https://www.javbus.com/uncensored/search/{number}"
+        html = etree.fromstring(html, etree.HTMLParser())
+        result = html.xpath("//*[@class='photo-frame']/img/@src")[0]
+    return result
+
 def main_uncensored(number):
     htmlcode = get_html('https://www.javbus.com/ja/' + number)
     if getTitle(htmlcode) == '':
         htmlcode = get_html('https://www.javbus.com/ja/' + number.replace('-','_'))
-    try:
-        dww_htmlcode = fanza.main_htmlcode(getCID(htmlcode))
-    except:
-        dww_htmlcode = ''
+    
+    avent_html = get_html('https://www.aventertainments.com/ppv/ppv_searchproducts.aspx?languageID=2&vodtypeid=1&keyword=' + number)
+    html_search = etree.fromstring(avent_html, etree.HTMLParser())
+    search_result = getProduct_uncen(html_search, number)
+    avent_html = get_html(search_result)
+    avent_html = etree.fromstring(htmlcode, etree.HTMLParser())
+
+
     dic = {
         'title': str(re.sub('\w+-\d+-','',getTitle(htmlcode))).replace(getNum(htmlcode)+'-',''),
         'studio': getStudio(htmlcode),
         'year': getYear(htmlcode),
-        'outline': getOutline(dww_htmlcode),
+        'outline': getOutline_uncen(avent_html),
         'runtime': getRuntime(htmlcode),
         'director': getDirector(htmlcode),
         'actor': getActor(htmlcode),
         'release': getRelease(htmlcode),
         'number': getNum(htmlcode),
         'cover': getCover(htmlcode),
+        'cover_small': getCover_small(htmlcode, number),
         'tag': getTag(htmlcode),
         'label': getSerise(htmlcode),
         'imagecut': 3,
@@ -151,37 +186,40 @@ def main_uncensored(number):
 
 def main(number):
     try:
-        htmlcode = get_html('https://www.javbus.com/' + number)
-        cid = getCID(htmlcode)
-        search_html = get_html('https://www.javbus.com/search/' + number)
-        
-        dww_htmlcode = fanza.main_htmlcode(cid)
+        try:
+            htmlcode = get_html('https://www.javbus.com/' + number)
+            cid = getCID(htmlcode)
+            search_html = get_html('https://www.javbus.com/search/' + number)
+            
+            dww_htmlcode = fanza.main_htmlcode(cid)
 
-        dic = {
-            'title': str(re.sub('\w+-\d+-', '', getTitle(htmlcode))),
-            'studio': getStudio(htmlcode),
-            'year': str(re.search('\d{4}', getYear(htmlcode)).group()),
-            'outline': getOutline(dww_htmlcode),
-            'runtime': getRuntime(htmlcode),
-            'director': getDirector(htmlcode),
-            'actor': getActor(htmlcode),
-            'release': getRelease(htmlcode),
-            'number': getNum(htmlcode),
-            'cover': getCover(htmlcode),
-            'cover_small': getCover_small(search_html),
-            'thumb': getThumb(cid),
-            'imagecut': 3,
-            'tag': getTag(htmlcode),
-            'label': getSerise(htmlcode),
-            'actor_photo': getActorPhoto(htmlcode),
-            'website': 'https://www.javbus.com/' + number,
-            'source': 'javbus.py',
-            'series': getSerise(htmlcode),
-        }
+            dic = {
+                'title': str(re.sub('\w+-\d+-', '', getTitle(htmlcode))),
+                'studio': getStudio(htmlcode),
+                'year': str(re.search('\d{4}', getYear(htmlcode)).group()),
+                'outline': getOutline(dww_htmlcode),
+                'runtime': getRuntime(htmlcode),
+                'director': getDirector(htmlcode),
+                'actor': getActor(htmlcode),
+                'release': getRelease(htmlcode),
+                'number': getNum(htmlcode),
+                'cover': getCover(htmlcode),
+                'cover_small': getCover_small(search_html),
+                'thumb': getThumb(cid),
+                'imagecut': 3,
+                'tag': getTag(htmlcode),
+                'label': getSerise(htmlcode),
+                'actor_photo': getActorPhoto(htmlcode),
+                'website': 'https://www.javbus.com/' + number,
+                'source': 'javbus.py',
+                'series': getSerise(htmlcode),
+            }
 
-        js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4,
-                        separators=(',', ':'), )  # .encode('UTF-8')
-        return js
+            js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4,
+                            separators=(',', ':'), )  # .encode('UTF-8')
+            return js
+        except:
+            return main_uncensored(number)
     except Exception as e:
         print(e)
         data = {
