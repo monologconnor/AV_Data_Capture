@@ -25,17 +25,19 @@ def getActor_Real(number):
     htmlcode = htmlcode.text
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     name_list = html.xpath('//*[@class="keyword"]/a/text()')
-    print(f"Choose the actor name for {number} with the number:")
+    result = ''
+    print(f"> Choosing these data for [{number}]")
     if len(name_list) != 0:
-        print(len(name_list))
         for i in range(len(name_list)):
-            print(f'({i}) {name_list[i]}')
+            print(f'> ({i}) {name_list[i]}')
 
         index = int(input(">>"))
+        if index < len(name_list):
+            result = name_list[index]
+        else:
+            result =  ''
 
-        return name_list[index]
-    else:
-        return ''
+    return result
 
 def getStudio(a):
     html = etree.fromstring(a, etree.HTMLParser()) #//table/tr[1]/td[1]/text()
@@ -92,7 +94,17 @@ def getTag(a):
 def getCover_javdb(number):
     html = get_html('https://javdb.com/search?q='+number+'&f=all')
     html = etree.fromstring(html, etree.HTMLParser())
-    result = html.xpath('//*[@class="item-image fix-scale-cover"]/img/@data-src')[0]
+    ids =html.xpath('//*[@id="videos"]/div/div/a/div[contains(@class, "uid")]/text()')
+    
+    print(f"Current code is {number}:")
+    for i in range(len(ids)):
+        print(f"> ({i}) {ids[i]}")
+    print(f"> ({len(ids)}) Not in here")
+    i = int(input('> '))
+    if i >= len(ids):
+        result = ""
+    else:
+        result = html.xpath('//*[@class="item-image fix-scale-cover"]/img/@data-src')[i]
     return result
 
 def getCover(htmlcode):
@@ -119,32 +131,38 @@ def getSeries(a):
         '\\n')
     return str(result1 + result2).strip('+').replace("', '", '').replace('"', '')
 def main(number2):
-    number=number2.upper()
-    htmlcode=str(get_html('https://www.mgstage.com/product/product_detail/'+str(number)+'/',cookies={'adc':'1'}))
-    soup = BeautifulSoup(htmlcode, 'lxml')
-    a = str(soup.find(attrs={'class': 'detail_data'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
-    b = str(soup.find(attrs={'id': 'introduction'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
-    #print(b)
-    dic = {
-        'title': getTitle(htmlcode).replace("\\n",'').replace('        ',''),
-        'studio': getStudio(a),
-        'outline': getOutline(b),
-        'runtime': getRuntime(a),
-        'director': getDirector(a),
-        'actor': getActor_Real(number),
-        'release': getRelease(a),
-        'number': getNum(a),
-        'cover': getCover(htmlcode),
-        'cover_small': getCover_javdb(number),
-        'imagecut': 3,
-        'tag': getTag(a),
-        'label':getLabel(a),
-        'year': getYear(getRelease(a)),  # str(re.search('\d{4}',getRelease(a)).group()),
-        'actor_photo': '',
-        'website':'https://www.mgstage.com/product/product_detail/'+str(number)+'/',
-        'source': 'mgstage.py',
-        'series': getSeries(a),
-    }
+    try:
+        number=number2.upper()
+        htmlcode=str(get_html('https://www.mgstage.com/product/product_detail/'+str(number)+'/',cookies={'adc':'1'}))
+        soup = BeautifulSoup(htmlcode, 'lxml')
+        a = str(soup.find(attrs={'class': 'detail_data'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
+        b = str(soup.find(attrs={'id': 'introduction'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
+        #print(b)
+        dic = {
+            'title': getTitle(htmlcode).replace("\\n",'').replace('        ',''),
+            'studio': getStudio(a),
+            'outline': getOutline(b),
+            'runtime': getRuntime(a),
+            'director': getDirector(a),
+            'actor': getActor_Real(number),
+            'release': getRelease(a),
+            'number': getNum(a),
+            'cover': getCover(htmlcode),
+            'cover_small': getCover_javdb(number),
+            'thumb': getCover(htmlcode),
+            'imagecut': 3,
+            'tag': getTag(a),
+            'label':getLabel(a),
+            'year': getYear(getRelease(a)),  # str(re.search('\d{4}',getRelease(a)).group()),
+            'actor_photo': '',
+            'website':'https://www.mgstage.com/product/product_detail/'+str(number)+'/',
+            'source': 'mgstage.py',
+            'series': getSeries(a),
+        }
+        js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
+    except Exception as e:
+        # print(e)
+        dic = {"title": ""}
     js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
     return js
     #print(htmlcode)

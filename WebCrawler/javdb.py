@@ -9,6 +9,8 @@ from ADC_function import *
 # import io
 # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, errors = 'replace', line_buffering = True)
 
+thumb_need = ['STARS', 'SDDE']
+
 def getTitle(a):
     html = etree.fromstring(a, etree.HTMLParser())
     result = html.xpath("/html/body/section/div/h2/strong/text()")[0]
@@ -83,16 +85,13 @@ def getCover_small(a, index=0):
     # javdb sometime returns multiple results
     # DO NOT just get the firt one, get the one with correct index number
     html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
-    try:
-        result = html.xpath("//div[@class='item-image fix-scale-cover']/img/@src")[index]
-        if not 'https' in result:
-            result = 'https:' + result
-        return result
-    except: # 2020.7.17 Repair Cover Url crawl
-        result = html.xpath("//div[@class='item-image fix-scale-cover']/img/@data-src")[index]
-        if not 'https' in result:
-            result = 'https:' + result
-        return result
+    # 2020.7.17 Repair Cover Url crawl
+    result = html.xpath("//*[@class='item-image fix-scale-cover']/img/@data-src")[index]
+    if 'placeholder' in result:
+        result = html.xpath("//*[@class='item-image fix-scale-cover']/img/@src")[index]
+    if not 'https' in result:
+        result = 'https:' + result
+    return result
 def getCover(htmlcode):
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     try:
@@ -100,6 +99,17 @@ def getCover(htmlcode):
     except: # 2020.7.17 Repair Cover Url crawl
         result = html.xpath("//div[contains(@class, 'column-video-cover')]/img/@src")[0]
     return result
+
+def getThumb(htmlcode):
+    cover = getCover(htmlcode)
+    cover = cover.replace("/digital/video/", "/mono/movie/adult/")
+    cover.replace("00", "", 2)
+
+    # html = get_html('https://www.javbus.com/' + number)
+    # html = etree.fromstring(html, etree.HTMLParser())
+    # result = html.xpath("//*[@class='bigImage']/@href")[0]
+    return result
+
 def getDirector(a):
     html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
     result1 = str(html.xpath('//strong[contains(text(),"導演")]/../span/text()')).strip(" ['']")
@@ -157,6 +167,7 @@ def main(number):
             'number': number,
             'cover': getCover(detail_page),
             'cover_small': cover_small,
+            'thumb': getThumb(number),
             'imagecut': imagecut,
             'tag': getTag(detail_page),
             'label': getLabel(detail_page),
@@ -175,4 +186,5 @@ def main(number):
 # main('DV-1562')
 # input("[+][+]Press enter key exit, you can check the error messge before you exit.\n[+][+]按回车键结束，你可以在结束之前查看和错误信息。")
 if __name__ == "__main__":
-    print(main('ipx-292'))
+    number = "dvdms-597"
+    print(main('STARS-197'))

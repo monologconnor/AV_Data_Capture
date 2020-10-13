@@ -106,7 +106,9 @@ def get_cover(lx: html.HtmlComment) -> str:
 
 
 if __name__ == "__main__":
-    lists = ["DVMC-003", "GS-0167", "JKREZ-001", "KMHRS-010", "KNSD-023"]
-    #lists = ["DVMC-003"]
-    for num in lists:
-        print(main(num))
+    # lists = ["DVMC-003", "GS-0167", "JKREZ-001", "KMHRS-010", "KNSD-023"]
+    # #lists = ["DVMC-003"]
+    # for num in lists:
+    #     print(main(num))
+	number = "STARS-197"
+	print(main("STARS-197"))

@@ -180,4 +180,4 @@ def main(number):
         return js
 
 if __name__ == "__main__" :
-    print(main('ipx-292'))
+    print(main('IPX-292'))

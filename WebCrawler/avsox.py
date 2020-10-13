@@ -110,6 +110,7 @@ def main(number):
         'number': getNum(info),
         'cover': getCover(web),
         'cover_small': getCover_small(a),
+        'thumb': getCover(web),
         'imagecut': 3,
         'tag': getTag(web),
         'label': getLabel(info),

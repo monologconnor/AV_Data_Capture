@@ -79,6 +79,7 @@ def main(number):
             'number': 'FC2-' + number,
             'label': '',
             'cover': getCover_fc2com(htmlcode2),
+            'thumb': getCover_fc2com(htmlcode2),
             'imagecut': 0,
             'tag': getTag_fc2com(number),
             'actor_photo': '',
