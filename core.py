@@ -129,7 +129,6 @@ def get_data_from_json(file_number, filepath, conf: config.Config):  # ä»ŽJSONè¿
     year = json_data['year']
     try:
         cover_small = json_data['cover_small']
-        print("i got it!!!!!!!!!!!!!!!!!!");
     except:
         cover_small = ''
     imagecut = json_data['imagecut']

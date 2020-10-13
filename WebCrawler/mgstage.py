@@ -159,7 +159,6 @@ def main(number2):
             'source': 'mgstage.py',
             'series': getSeries(a),
         }
-        js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
     except Exception as e:
         # print(e)
         dic = {"title": ""}

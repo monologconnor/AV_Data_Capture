@@ -5,6 +5,8 @@ from lxml import etree
 import json
 from bs4 import BeautifulSoup
 from ADC_function import *
+from WebCrawler import fanza
+from WebCrawler import javbus
 # import sys
 # import io
 # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, errors = 'replace', line_buffering = True)
@@ -92,23 +94,27 @@ def getCover_small(a, index=0):
     if not 'https' in result:
         result = 'https:' + result
     return result
-def getCover(htmlcode):
-    html = etree.fromstring(htmlcode, etree.HTMLParser())
-    try:
-        result = html.xpath("//div[contains(@class, 'column-video-cover')]/a/img/@src")[0]
-    except: # 2020.7.17 Repair Cover Url crawl
-        result = html.xpath("//div[contains(@class, 'column-video-cover')]/img/@src")[0]
-    return result
-
-def getThumb(htmlcode):
-    cover = getCover(htmlcode)
-    cover = cover.replace("/digital/video/", "/mono/movie/adult/")
-    cover.replace("00", "", 2)
+def getCover(number):
+    # html = etree.fromstring(htmlcode, etree.HTMLParser())
+    # try:
+    #     result = html.xpath("//div[contains(@class, 'column-video-cover')]/a/img/@src")[0]
+    # except: # 2020.7.17 Repair Cover Url crawl
+    #     result = html.xpath("//div[contains(@class, 'column-video-cover')]/img/@src")[0]
+    # return result
 
     # html = get_html('https://www.javbus.com/' + number)
     # html = etree.fromstring(html, etree.HTMLParser())
     # result = html.xpath("//*[@class='bigImage']/@href")[0]
+    # return result
+
+    result = f"https://pics.dmm.co.jp/digital/video/{cid}/{cid}pl.jpg"
     return result
+
+def getThumb(htmlcode):
+    modified = cid.replace("00", '')
+    result = f"https://pics.dmm.co.jp/mono/movie/adult/{modified}/{modified}pl.jpg"
+    return result
+
 
 def getDirector(a):
     html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
@@ -117,8 +123,11 @@ def getDirector(a):
     return str(result1 + result2).strip('+').replace("', '", '').replace('"', '')
 def getOutline(htmlcode):
     html = etree.fromstring(htmlcode, etree.HTMLParser())
-    result = str(html.xpath('//*[@id="introduction"]/dd/p[1]/text()')).strip(" ['']")
-    return result
+    try:
+        result = html.xpath("string(//div[contains(@class,'mg-b20 lh4')])").replace('\n','')
+        return result
+    except:
+        return ''
 def getSeries(a):
     #/html/body/section/div/div[3]/div[2]/nav/div[7]/span/a
     html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
@@ -141,6 +150,13 @@ def main(number):
         correct_url = urls[ids.index(number)]
         detail_page = get_html('https://javdb.com' + correct_url)
 
+
+        cid = javbus.getCID(get_html('https://www.javbus.com/' + number))
+        try:
+            dmm_html = fanza.main_htmlcode(cid)
+        except:
+            dmm_html = ""
+
         # no cut image by default
         imagecut = 3
         # If gray image exists ,then replace with normal cover
@@ -160,14 +176,14 @@ def main(number):
             'actor': getActor(detail_page),
             'title': title,
             'studio': getStudio(detail_page),
-            'outline': getOutline(detail_page),
+            'outline': getOutline(dmm_html),
             'runtime': getRuntime(detail_page),
             'director': getDirector(detail_page),
             'release': getRelease(detail_page),
             'number': number,
             'cover': getCover(detail_page),
             'cover_small': cover_small,
-            'thumb': getThumb(number),
+            'thumb': getThumb(detail_page),
             'imagecut': imagecut,
             'tag': getTag(detail_page),
             'label': getLabel(detail_page),
@@ -186,5 +202,5 @@ def main(number):
 # main('DV-1562')
 # input("[+][+]Press enter key exit, you can check the error messge before you exit.\n[+][+]按回车键结束，你可以在结束之前查看和错误信息。")
 if __name__ == "__main__":
-    number = "dvdms-597"
-    print(main('STARS-197'))
+    number = "STARS-252"
+    print(main('STARS-252'))
