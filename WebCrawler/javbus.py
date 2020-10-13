@@ -8,6 +8,7 @@ import json
 from ADC_function import *
 from WebCrawler import fanza
 
+
 def getActorPhoto(htmlcode): #//*[@id="star_qdt"]/li/a/img
     soup = BeautifulSoup(htmlcode, 'lxml')
     a = soup.find_all(attrs={'class': 'star-name'})
@@ -112,7 +113,7 @@ def getTag(htmlcode):  # 获取标签
         tag.append(translateTag_to_sc(i.get_text()))
     return tag
 
-def getThumb(htmlcode):
+def getThumb(cid):
     modified = cid.replace("00", '')
     result = f"https://pics.dmm.co.jp/mono/movie/adult/{modified}/{modified}pl.jpg"
     return result
@@ -150,43 +151,39 @@ def main_uncensored(number):
 
 def main(number):
     try:
-        try:
-            htmlcode = get_html('https://www.javbus.com/' + number)
-            print("i got here")
-            cid = getCID(htmlcode)
-            search_html = get_html('https://www.javbus.com/search/' + number)
-            try:
-                dww_htmlcode = fanza.main_htmlcode(cid)
-            except:
-                dww_htmlcode = ''
-            dic = {
-                'title': str(re.sub('\w+-\d+-', '', getTitle(htmlcode))),
-                'studio': getStudio(htmlcode),
-                'year': str(re.search('\d{4}', getYear(htmlcode)).group()),
-                'outline': getOutline(dww_htmlcode),
-                'runtime': getRuntime(htmlcode),
-                'director': getDirector(htmlcode),
-                'actor': getActor(htmlcode),
-                'release': getRelease(htmlcode),
-                'number': getNum(htmlcode),
-                'cover': getCover(htmlcode),
-                'cover_small': getCover_small(search_html),
-                'thumb': getThumb(cid),
-                'imagecut': 3,
-                'tag': getTag(htmlcode),
-                'label': getSerise(htmlcode),
-                'actor_photo': getActorPhoto(htmlcode),
-                'website': 'https://www.javbus.com/' + number,
-                'source': 'javbus.py',
-                'series': getSerise(htmlcode),
-            }
-            
-            js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4,
-                            separators=(',', ':'), )  # .encode('UTF-8')
-            return js
-        except:
-            return main_uncensored(number)
-    except:
+        htmlcode = get_html('https://www.javbus.com/' + number)
+        cid = getCID(htmlcode)
+        search_html = get_html('https://www.javbus.com/search/' + number)
+        
+        dww_htmlcode = fanza.main_htmlcode(cid)
+
+        dic = {
+            'title': str(re.sub('\w+-\d+-', '', getTitle(htmlcode))),
+            'studio': getStudio(htmlcode),
+            'year': str(re.search('\d{4}', getYear(htmlcode)).group()),
+            'outline': getOutline(dww_htmlcode),
+            'runtime': getRuntime(htmlcode),
+            'director': getDirector(htmlcode),
+            'actor': getActor(htmlcode),
+            'release': getRelease(htmlcode),
+            'number': getNum(htmlcode),
+            'cover': getCover(htmlcode),
+            'cover_small': getCover_small(search_html),
+            'thumb': getThumb(cid),
+            'imagecut': 3,
+            'tag': getTag(htmlcode),
+            'label': getSerise(htmlcode),
+            'actor_photo': getActorPhoto(htmlcode),
+            'website': 'https://www.javbus.com/' + number,
+            'source': 'javbus.py',
+            'series': getSerise(htmlcode),
+        }
+
+        js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4,
+                        separators=(',', ':'), )  # .encode('UTF-8')
+        return js
+    except Exception as e:
+        print(e)
         data = {
             "title": "",
         }
