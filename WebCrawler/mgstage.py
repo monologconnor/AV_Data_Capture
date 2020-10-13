@@ -5,9 +5,6 @@ from lxml import etree
 import json
 from bs4 import BeautifulSoup
 from ADC_function import *
-# import sys
-# import io
-# sys.stdout = io.TextIOWrapper(sys.stdout.buffer, errors = 'replace', line_buffering = True)
 
 def getTitle(a):
     try:
@@ -139,7 +136,7 @@ def main(number2):
         'number': getNum(a),
         'cover': getCover(htmlcode),
         'cover_small': getCover_javdb(number),
-        'imagecut': 0,
+        'imagecut': 3,
         'tag': getTag(a),
         'label':getLabel(a),
         'year': getYear(getRelease(a)),  # str(re.search('\d{4}',getRelease(a)).group()),
