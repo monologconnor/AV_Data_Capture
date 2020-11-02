@@ -114,9 +114,19 @@ def getTag(htmlcode):  # 获取标签
     return tag
 
 def getThumb(cid):
-    modified = cid.replace("00", '')
-    result = f"https://pics.dmm.co.jp/mono/movie/adult/{modified}/{modified}pl.jpg"
-    return result
+    modified = cid.replace("00", '', 1)
+    result = []
+    result.append(f"https://pics.dmm.co.jp/mono/movie/adult/{modified}/{modified}pl.jpg")
+    result.append(f"https://pics.dmm.co.jp/mono/movie/adult/{modified}so/{modified}sopl.jpg")
+    result.append(f"https://pics.dmm.co.jp/mono/movie/adult/{cid}/{cid}pl.jpg")
+
+    for item in result:
+        html = get_html(item, return_type="object")
+        if "now_printing" not in html.url:
+            return item
+
+
+    return ""
 
 def getProduct_uncen(html, number):
     product_name = html.xpath('//*[@class="product-title"]/a/text()')
