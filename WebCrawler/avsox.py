@@ -1,6 +1,7 @@
 import sys
 sys.path.append('..')
 import re
+import requests
 from lxml import etree
 import json
 from bs4 import BeautifulSoup
@@ -64,14 +65,21 @@ def getCover(htmlcode):
     result = str(html.xpath('/html/body/div[2]/div[1]/div[1]/a/img/@src')).strip(" ['']")
     return result
 def getCover_small(htmlcode, number):
-    javbus = get_html(f"https://www.javbus.com/{number}")
-    javbus = etree.fromstring(javbus, etree.HTMLParser())
-    result = javbus.xpath("//*[@class='sample-box']/@href")
-    if len(result) != 0:
-        result = result[0]
-    else:
-        html = etree.fromstring(htmlcode, etree.HTMLParser())
-        result = str(html.xpath('//*[@id="waterfall"]/div/a/div[1]/img/@src')).strip(" ['']")
+    # javbus = get_html(f"https://www.javbus.com/{number}")
+    # javbus = etree.fromstring(javbus, etree.HTMLParser())
+    # result = javbus.xpath("//*[@class='sample-box']/@href")
+    # if len(result) != 0:
+    #     result = result[0]
+    # else:
+
+    # https://www.caribbeancompr.com/moviepages/110919_002/images/main_b.jpg
+    # https://www.caribbeancom.com/moviepages/112219-001/images/jacket.jpg
+    # https://imgs02.aventertainments.com/archive/bigcover/dvd1cwpbd-46.jpg
+    # https://imgs02.aventertainments.com/archive/bigcover/dvd1cwp-46.jpg
+
+
+    html = etree.fromstring(htmlcode, etree.HTMLParser())
+    result = str(html.xpath('//*[@id="waterfall"]/div/a/div[1]/img/@src')).strip(" ['']")
     return result
 def getTag(a):  # 获取演员
     soup = BeautifulSoup(a, 'lxml')
@@ -90,7 +98,45 @@ def getSeries(htmlcode):
         return ''
 
 def getOutline(html):
-    result = html.xpath('//*[@class="product-description mt-20"]/p/text()')[0]
+    studio = getStudio(html)
+    number = getNum(html)
+
+    if "1pondo" in studio:
+        r = requests.get(f"https://www.1pondo.tv/dyn/phpauto/movie_details/movie_id/{number}.json")
+        result = r.json()["Desc"]
+
+
+    elif "Caribbean" in stuido:
+        if "-" in number:
+            html = get_html(f"https://www.caribbeancom.com/moviepages/{number}/index.html", return_type = "object")
+            html.encoding = 'euc-jp'
+            html = html.text
+            html = etree.fromstring(html, etree.HTMLParser())
+
+            result = html.xpath("//*[@itemprop = 'description']/text()")[0]
+        elif "_" in number:
+            html = get_html(f"https://www.caribbeancompr.com/moviepages/{number}/index.html", return_type = "object")
+            html.encoding = 'euc-rm -rf '
+            html = html.text
+            html = etree.fromstring(html, etree.HTMLParser())
+
+            result = html.xpath("//*[@class='section is-wide']/p/text()")[0]
+    elif "HEYZO" in stuido:
+        number = number.split('-')[1]
+        html = get_html(f"https://www.heyzo.com/moviepages/{number}/index.html")
+        html = etree.fromstring(html, etree.HTMLParser())
+
+        result = html.xpath("//*[@class='memo']/text()")[0]
+        
+    elif "Tokyo" in stuido:
+        pass
+    else:
+        html = get_html(f"https://www.aventertainments.com/search_Products.aspx?languageID=2&dept_id=29&keyword={number}&searchby=keyword")
+
+        pass
+
+
+    # result = html.xpath('//*[@class="product-description mt-20"]/p/text()')[0]
 
     return result      
 
@@ -129,18 +175,18 @@ def main(number):
     soup = BeautifulSoup(web, 'lxml')
     info = str(soup.find(attrs={'class': 'row movie'}))
 
-    hcode_search = get_html('https://www.aventertainments.com/ppv/ppv_searchproducts.aspx?languageID=2&vodtypeid=1&keyword=' + number)
-    html_search = etree.fromstring(hcode_search, etree.HTMLParser())
-    search_result = getProduct(html_search, number)
-    search_result = get_html(search_result)
-    search_result = etree.fromstring(search_result, etree.HTMLParser())
+    # hcode_search = get_html('https://www.aventertainments.com/ppv/ppv_searchproducts.aspx?languageID=2&vodtypeid=1&keyword=' + number)
+    # html_search = etree.fromstring(hcode_search, etree.HTMLParser())
+    # search_result = getProduct(html_search, number)
+    # search_result = get_html(search_result)
+    # search_result = etree.fromstring(search_result, etree.HTMLParser())
 
 
     dic = {
         'actor': getActor(web),
         'title': getTitle(web).strip(getNum(web)),
         'studio': getStudio(info),
-        'outline': getOutline(search_result),#
+        'outline': getOutline(info),#
         'runtime': getRuntime(info),
         'director': '', #
         'release': getRelease(info),
