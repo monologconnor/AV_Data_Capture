@@ -16,8 +16,9 @@ CLI 版本
 **日本电影元数据 抓取工具 | 刮削器**，配合本地影片管理软件 Emby, Jellyfin, Kodi 等管理本地影片，该软件起到分类与元数据（metadata）抓取作用，利用元数据信息来分类，仅供本地影片分类整理使用。  
 #### 本地电影刮削与整理一体化解决方案
 
-# 官方文档
-* [WIKI](https://github.com/yoshiko2/AV_Data_Capture/wiki)
+# 文档
+* [官方WIKI](https://github.com/yoshiko2/AV_Data_Capture/wiki)
+* [VergilGao's Docker部署](https://github.com/VergilGao/docker-avdc)
 
 # 版本发布
 * [Release](https://github.com/yoshiko2/AV_Data_Capture/releases)
@@ -36,7 +37,7 @@ CLI 版本
 * 本软件作者yoshiko2保留最终决定权和最终解释权
 * 若用户不同意上述条款任意一条，请勿使用本软件
 ---
-When you run the software, you accept the following terms
+When you view and download the source code or binary program of this project, it means that you have accepted the following terms
 
 * This software is only for technical exchange and academic exchange
 * **Please do not promote this project on popular social platforms**
@@ -49,7 +50,7 @@ When you run the software, you accept the following terms
 * The author of this software yoshiko2 reserves the right of final decision and final interpretation
 * If the user does not agree with any of the above terms, please do not use this software
 ---
-このソフトウェアを実行すると、次の条件に同意したことになります
+このプロジェクトのソースコードまたはバイナリプログラムを表示してダウンロードすると、次の条件に同意したことになります。
 
 * このソフトウェアは、技術交換、学術交換専用です。
 * **人気のソーシャルプラットフォームでこのプロジェクトを宣伝しないでください**

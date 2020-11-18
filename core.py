@@ -215,10 +215,20 @@ def get_data_from_json(file_number, filepath, conf: config.Config):  # ä»ŽJSONè¿
     json_data['release'] = release
     json_data['cover_small'] = cover_small
     json_data['tag'] = tag
-    json_data['naming_rule'] = eval(conf.naming_rule())
     json_data['location_rule'] = location_rule
     json_data['year'] = year
     json_data['actor_list'] = actor_list
+    if conf.is_transalte():
+        translate_values = conf.transalte_values().split(",")
+        for translate_value in translate_values:
+            json_data[translate_value] = translate(json_data[translate_value])
+    naming_rule=""
+    for i in conf.naming_rule().split("+"):
+        if i not in json_data:
+            naming_rule+=i.strip("'").strip('"')
+        else:
+            naming_rule+=json_data[i]
+    json_data['naming_rule'] = naming_rule
     return json_data
 
 
@@ -276,11 +286,11 @@ def trimblank(s: str):
 
 # path = examle:photo , video.in the Project Folder!
 def download_file_with_filename(url, filename, path, conf: config.Config, filepath, failed_folder):
-    proxy, timeout, retry_count, proxytype = config.Config().proxy()
+    switch, proxy, timeout, retry_count, proxytype = config.Config().proxy()
 
     for i in range(retry_count):
         try:
-            if not proxy == '':
+            if switch == 1:
                 if not os.path.exists(path):
                     os.makedirs(path)
                 proxies = get_proxy(proxy, proxytype)
@@ -328,7 +338,7 @@ def image_download(pic_type, cover, number, c_word, path, conf: config.Config, f
         moveFailedFolder(filepath, failed_folder)
         return
 
-    _proxy, _timeout, retry, _proxytype = conf.proxy()
+    switch, _proxy, _timeout, retry, _proxytype = conf.proxy()
     for i in range(retry):
         if os.path.getsize(path + '/' + number + c_word + pic_type) == 0:
             print('[!]Image Download Failed! Trying again. [{}/3]', i + 1)

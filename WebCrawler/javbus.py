@@ -196,12 +196,15 @@ def main_uncensored(number):
 
 def main(number):
     try:
-        htmlcode = get_html('https://www.javbus.com/' + number)
-        cid = getCID(htmlcode)
-        search_html = get_html('https://www.javbus.com/search/' + number)
-        
-        dww_htmlcode = fanza.main_htmlcode(cid)
-
+        # try:
+        try:
+            htmlcode = get_html('https://www.fanbus.us/' + number)
+        except:
+            htmlcode = get_html('https://www.javbus.com/' + number)
+        try:
+            dww_htmlcode = fanza.main_htmlcode(getCID(htmlcode))
+        except:
+            dww_htmlcode = ''
         dic = {
             'title': str(re.sub('\w+-\d+-', '', getTitle(htmlcode))),
             'studio': getStudio(htmlcode),
@@ -213,9 +216,8 @@ def main(number):
             'release': getRelease(htmlcode),
             'number': getNum(htmlcode),
             'cover': getCover(htmlcode),
-            'cover_small': getCover_small(search_html),
             'thumb': getThumb(cid),
-            'imagecut': 3,
+            'imagecut': 1,
             'tag': getTag(htmlcode),
             'label': getSerise(htmlcode),
             'actor_photo': getActorPhoto(htmlcode),
@@ -223,12 +225,11 @@ def main(number):
             'source': 'javbus.py',
             'series': getSerise(htmlcode),
         }
-
-        js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4,
-                        separators=(',', ':'), )  # .encode('UTF-8')
+        js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4,separators=(',', ':'), )  # .encode('UTF-8')
         return js
-    except Exception as e:
-        print(e)
+        # except:
+        #     return main_uncensored(number)
+    except:
         data = {
             "title": "",
         }

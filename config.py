@@ -12,8 +12,16 @@ class Config:
             except:
                 self.conf.read(path, encoding="utf-8")
         else:
-            print("[-] Config file not found! Use the default settings")
-            self.conf = self._default_config()
+            try:
+                self.conf = configparser.ConfigParser()
+                try: # From single crawler debug use only
+                    self.conf.read('../' + path, encoding="utf-8-sig")
+                except:
+                    self.conf.read('../' + path, encoding="utf-8")
+            except Exception as e:
+                print("[-]Config file not found! Use the default settings")
+                print("[-]",e)
+                self.conf = self._default_config()
 
     def main_mode(self) -> str:
         try:
@@ -35,15 +43,19 @@ class Config:
         return self.conf.getboolean("common", "auto_exit")
     def transalte_to_sc(self) -> bool:
         return self.conf.getboolean("common", "transalte_to_sc")
-
+    def is_transalte(self) -> bool:
+        return self.conf.getboolean("transalte", "switch")
+    def transalte_values(self) -> bool:
+        return self.conf.get("transalte", "values")
     def proxy(self) -> [str, int, int, str]:
         try:
             sec = "proxy"
+            switch = self.conf.get(sec, "switch")
             proxy = self.conf.get(sec, "proxy")
             timeout = self.conf.getint(sec, "timeout")
             retry = self.conf.getint(sec, "retry")
             proxytype = self.conf.get(sec, "type")
-            return proxy, timeout, retry, proxytype
+            return switch, proxy, timeout, retry, proxytype
         except ValueError:
             self._exit("common")
 
@@ -103,7 +115,7 @@ class Config:
         sec2 = "proxy"
         conf.add_section(sec2)
         conf.set(sec2, "proxy", "")
-        conf.set(sec2, "timeout", "10")
+        conf.set(sec2, "timeout", "5")
         conf.set(sec2, "retry", "3")
         conf.set(sec2, "type", "socks5")
 
@@ -130,6 +142,11 @@ class Config:
         conf.add_section(sec7)
         conf.set(sec7, "switch", "0")
 
+        sec8 = "transalte"
+        conf.add_section(sec8)
+        conf.set(sec8, "switch", "0")
+        conf.set(sec8, "values", "title,outline")
+
         return conf
 
 
@@ -149,3 +166,5 @@ if __name__ == "__main__":
     print(config.escape_literals())
     print(config.escape_folder())
     print(config.debug())
+    print(config.is_transalte())
+    print(config.transalte_values())
