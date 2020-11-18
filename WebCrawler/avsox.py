@@ -64,7 +64,7 @@ def getCover(htmlcode):
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     result = str(html.xpath('/html/body/div[2]/div[1]/div[1]/a/img/@src')).strip(" ['']")
     return result
-def getCover_small(htmlcode, number):
+def getCover_small(htmlcode, number, studio):
     # javbus = get_html(f"https://www.javbus.com/{number}")
     # javbus = etree.fromstring(javbus, etree.HTMLParser())
     # result = javbus.xpath("//*[@class='sample-box']/@href")
@@ -78,9 +78,46 @@ def getCover_small(htmlcode, number):
     # https://imgs02.aventertainments.com/archive/bigcover/dvd1cwp-46.jpg
 
 
-    html = etree.fromstring(htmlcode, etree.HTMLParser())
-    result = str(html.xpath('//*[@id="waterfall"]/div/a/div[1]/img/@src')).strip(" ['']")
-    return result
+    if "1pondo" in studio:
+
+
+
+    elif "Caribbean" in stuido:
+        if "-" in number:
+            html = get_html(f"https://www.caribbeancom.com/moviepages/{number}/index.html", return_type = "object")
+            html.encoding = 'euc-jp'
+            html = html.text
+            html = etree.fromstring(html, etree.HTMLParser())
+
+            result = html.xpath("//*[@itemprop = 'description']/text()")[0]
+        elif "_" in number:
+            html = get_html(f"https://www.caribbeancompr.com/moviepages/{number}/index.html", return_type = "object")
+            html.encoding = 'euc-rm -rf '
+            html = html.text
+            html = etree.fromstring(html, etree.HTMLParser())
+
+            result = html.xpath("//*[@class='section is-wide']/p/text()")[0]
+    elif "HEYZO" in stuido:
+
+        
+    elif "Tokyo" in stuido:
+        pass
+    else:
+        html = get_html(f"https://www.aventertainments.com/search_Products.aspx?languageID=2&dept_id=29&keyword={number}&searchby=keyword")
+        result = str(html.xpath('//*[@id="waterfall"]/div/a/div[1]/img/@src')).strip(" ['']")
+
+        pass
+
+    return result      
+
+
+    # html = etree.fromstring(htmlcode, etree.HTMLParser())
+    # return result
+
+
+
+
+
 def getTag(a):  # 获取演员
     soup = BeautifulSoup(a, 'lxml')
     a = soup.find_all(attrs={'class': 'genre'})
@@ -97,8 +134,8 @@ def getSeries(htmlcode):
     except:
         return ''
 
-def getOutline(html):
-    studio = getStudio(html)
+def getOutline(html, studio):
+    # studio = getStudio(html)
     number = getNum(html)
 
     if "1pondo" in studio:
@@ -181,18 +218,19 @@ def main(number):
     # search_result = get_html(search_result)
     # search_result = etree.fromstring(search_result, etree.HTMLParser())
 
+    studio = getStudio(info)
 
     dic = {
         'actor': getActor(web),
         'title': getTitle(web).strip(getNum(web)),
-        'studio': getStudio(info),
-        'outline': getOutline(info),#
+        'studio': studio,
+        'outline': getOutline(info, studio),#
         'runtime': getRuntime(info),
         'director': '', #
         'release': getRelease(info),
         'number': getNum(info),
         'cover': getCover(web),
-        'cover_small': getCover_small(a, number),
+        'cover_small': getCover_small(a, number, studio),
         'thumb': getCover(web),
         'imagecut': 3,
         'tag': getTag(web),

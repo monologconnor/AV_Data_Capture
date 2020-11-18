@@ -62,12 +62,18 @@ def getRuntime(htmlcode): #获取分钟 已修改
     result = str(html.xpath('/html/body/div[5]/div[1]/div[2]/p[3]/text()')).strip(" ['']分鐘")
     return result
 def getActor(htmlcode):   #获取女优
-    b=[]
-    soup=BeautifulSoup(htmlcode,'lxml')
-    a=soup.find_all(attrs={'class':'star-name'})
-    for i in a:
-        b.append(i.get_text())
-    return b
+    # b=[]
+    # soup=BeautifulSoup(htmlcode,'lxml')
+    # a=soup.find_all(attrs={'class':'star-name'})
+    # for i in a:
+    #     b.append(i.get_text())
+    # return b
+    html = etree.fromstring(htmlcode, etree.HTMLParser())
+    
+    result = html.xpath('//*[@class="star-name"]/a/text()')
+
+    return result
+
 def getNum(htmlcode):     #获取番号
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     result = str(html.xpath('/html/body/div[5]/div[1]/div[2]/p[1]/span[2]/text()')).strip(" ['']")
@@ -201,6 +207,7 @@ def main(number):
             htmlcode = get_html('https://www.fanbus.us/' + number)
         except:
             htmlcode = get_html('https://www.javbus.com/' + number)
+        cid = getCID(htmlcode)
         try:
             dww_htmlcode = fanza.main_htmlcode(getCID(htmlcode))
         except:
@@ -229,7 +236,8 @@ def main(number):
         return js
         # except:
         #     return main_uncensored(number)
-    except:
+    except Exception as e:
+        print(e)
         data = {
             "title": "",
         }

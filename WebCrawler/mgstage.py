@@ -20,24 +20,30 @@ def getActor(a): #//*[@id="center_column"]/div[2]/div[1]/div/table/tbody/tr[1]/t
     return str(result1+result2).strip('+').replace("', '",'').replace('"','').replace('/',',')
 
 def getActor_Real(number):
-    htmlcode = get_html('https://seesaawiki.jp/av_neme/search?keywords=' + number, return_type = "object")
-    htmlcode.encoding = 'euc-jp'
-    htmlcode = htmlcode.text
+    # htmlcode = get_html('https://seesaawiki.jp/av_neme/search?keywords=' + number, return_type = "object")
+    # htmlcode.encoding = 'euc-jp'
+    # htmlcode = htmlcode.text
+    # return ""
+    htmlcode = get_html('https://www.roguelibrarian.com/?s=' + number)
     html = etree.fromstring(htmlcode, etree.HTMLParser())
-    name_list = html.xpath('//*[@class="keyword"]/a/text()')
-    result = ''
-    print(f"> Choosing these data for [{number}]")
-    if len(name_list) != 0:
-        for i in range(len(name_list)):
-            print(f'> ({i}) {name_list[i]}')
+    name_list = html.xpath('//*[@class="sh_box"]/a/text()')
+    # name_list = html.xpath('//*[@class="keyword"]/a/text()')
+    # result = ''
+    # print(f"> Choosing these data for [{number}]")
+    # if len(name_list) != 0:
+    #     for i in range(len(name_list)):
+    #         print(f'> ({i}) {name_list[i]}')
 
-        index = int(input(">>"))
-        if index < len(name_list):
-            result = name_list[index]
-        else:
-            result =  ''
+    #     index = int(input(">>"))
+    #     if index < len(name_list):
+    #         result = name_list[index]
+    #     else:
+    #         result =  ''
 
-    return result
+    # return result
+    name_list = list(set(name_list))
+
+    return name_list
 
 def getStudio(a):
     html = etree.fromstring(a, etree.HTMLParser()) #//table/tr[1]/td[1]/text()
@@ -96,15 +102,23 @@ def getCover_javdb(number):
     html = etree.fromstring(html, etree.HTMLParser())
     ids =html.xpath('//*[@id="videos"]/div/div/a/div[contains(@class, "uid")]/text()')
     
-    print(f"Current code is {number}:")
+    # print(f"Current code is {number}:")
+    # for i in range(len(ids)):
+    #     print(f"> ({i}) {ids[i]}")
+    # print(f"> ({len(ids)}) Not in here")
+    # i = int(input('> '))
+    # if i >= len(ids):
+    #     result = ""
+    # else:
+    #     result = html.xpath('//*[@class="item-image fix-scale-cover"]/img/@data-src')[i]
+
+    result = ''
     for i in range(len(ids)):
-        print(f"> ({i}) {ids[i]}")
-    print(f"> ({len(ids)}) Not in here")
-    i = int(input('> '))
-    if i >= len(ids):
-        result = ""
-    else:
-        result = html.xpath('//*[@class="item-image fix-scale-cover"]/img/@data-src')[i]
+        if (ids[i] in number):
+            print(f"Selected {ids[i]}")
+            result = html.xpath('//*[@class="item-image fix-scale-cover"]/img/@data-src')[i]
+            break
+
     return result
 
 def getCover(htmlcode):
