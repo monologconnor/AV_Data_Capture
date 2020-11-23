@@ -48,10 +48,16 @@ def getCover(htmlcode):  #获取封面链接
     doc = pq(htmlcode)
     image = doc('a.bigImage')
     return image.attr('href')
-def getCover_small(htmlcode):
-    html = etree.fromstring(htmlcode, etree.HTMLParser())
-    result =html.xpath("//*[@class='photo-frame']/img/@src")[0]
+# def getCover_small(htmlcode):
+#     html = etree.fromstring(htmlcode, etree.HTMLParser())
+#     result =html.xpath("//*[@class='photo-frame']/img/@src")[0]
+#     return result
+def getCover_small(cid):
+    result = f"https://pics.dmm.co.jp/digital/video/{cid}/{cid}ps.jpg"
+
     return result
+
+
 
 def getRelease(htmlcode): #获取出版日期
     html = etree.fromstring(htmlcode, etree.HTMLParser())
@@ -119,7 +125,7 @@ def getTag(htmlcode):  # 获取标签
         tag.append(translateTag_to_sc(i.get_text()))
     return tag
 
-def getThumb(cid):
+def getThumb(cid, htmlcode):
     modified = cid.replace("00", '', 1)
     result = []
     result.append(f"https://pics.dmm.co.jp/mono/movie/adult/{modified}/{modified}pl.jpg")
@@ -132,7 +138,7 @@ def getThumb(cid):
             return item
 
 
-    return ""
+    return getCover(htmlcode)
 
 def getProduct_uncen(html, number):
     product_name = html.xpath('//*[@class="product-title"]/a/text()')
@@ -154,15 +160,15 @@ def getOutline_uncen(html):
 
     return result
 
-# def getCover_small(html, number):
-#     result = html.xpath("//*[@class='sample-box']/@href")
-#     if len(result) != 0:
-#         result = result[0]
-#     else:
-#         html = f"https://www.javbus.com/uncensored/search/{number}"
-#         html = etree.fromstring(html, etree.HTMLParser())
-#         result = html.xpath("//*[@class='photo-frame']/img/@src")[0]
-#     return result
+def getCover_uncen_small(html, number):
+    result = html.xpath("//*[@class='sample-box']/@href")
+    if len(result) != 0:
+        result = result[0]
+    else:
+        html = f"https://www.javbus.com/uncensored/search/{number}"
+        html = etree.fromstring(html, etree.HTMLParser())
+        result = html.xpath("//*[@class='photo-frame']/img/@src")[0]
+    return result
 
 def main_uncensored(number):
     htmlcode = get_html('https://www.javbus.com/ja/' + number)
@@ -187,7 +193,7 @@ def main_uncensored(number):
         'release': getRelease(htmlcode),
         'number': getNum(htmlcode),
         'cover': getCover(htmlcode),
-        'cover_small': getCover_small(htmlcode, number),
+        'cover_small': getCover_uncen_small(htmlcode, number),
         'tag': getTag(htmlcode),
         'label': getSerise(htmlcode),
         'imagecut': 3,
@@ -223,7 +229,7 @@ def main(number):
             'release': getRelease(htmlcode),
             'number': getNum(htmlcode),
             'cover': getCover(htmlcode),
-            'thumb': getThumb(cid),
+            'thumb': getThumb(cid, htmlcode),
             'imagecut': 1,
             'tag': getTag(htmlcode),
             'label': getSerise(htmlcode),
@@ -232,6 +238,11 @@ def main(number):
             'source': 'javbus.py',
             'series': getSerise(htmlcode),
         }
+
+        if dic['cover'] == dic['thumb']:
+            dic['imagecut'] = 3
+            dic['cover_small'] = getCover_small(cid)
+
         js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4,separators=(',', ':'), )  # .encode('UTF-8')
         return js
         # except:

@@ -46,13 +46,17 @@ def getCover_fc2com(htmlcode2): #获取厂商 #
 #     print(ADC_function.get_html('https://adult.contents.fc2.com'+path,cookies={'wei6H':'1'}))
 #     result = str(html.xpath('/html/body/div/text()')).strip(" ['']").replace("\\n",'',10000).replace("'",'',10000).replace(', ,','').strip('  ').replace('。,',',')
 #     return result
-def getTag_fc2com(number):     #获取番号
-    htmlcode = str(bytes(ADC_function.get_html('http://adult.contents.fc2.com/api/v4/article/'+number+'/tag?'),'utf-8').decode('unicode-escape'))
-    result = re.findall('"tag":"(.*?)"', htmlcode)
-    tag = []
-    for i in result:
-        tag.append(ADC_function.translateTag_to_sc(i))
-    return tag
+def getTag_fc2com(html):     
+    # htmlcode = str(bytes(ADC_function.get_html('http://adult.contents.fc2.com/api/v4/article/'+number+'/tag?'),'utf-8').decode('unicode-escape'))
+    # result = re.findall('"tag":"(.*?)"', htmlcode)
+    # tag = []
+    # for i in result:
+    #     tag.append(ADC_function.translateTag_to_sc(i))
+    # return tag
+    html = etree.fromstring(html, etree.HTMLParser())
+    tags = html.xpath("//*[@class = 'tag tagTag']/text()")
+    return tags
+
 def getYear_fc2com(release):
     try:
         result = re.search('\d{4}',release).group()
@@ -88,9 +92,9 @@ def main(number):
             'series': '',
         }
     except Exception as e:
-        # print(e)
+        print(e)
         dic = {"title": ""}
-    js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
+    js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'))
     return js
 
 if __name__ == '__main__':

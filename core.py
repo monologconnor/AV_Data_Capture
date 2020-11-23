@@ -106,7 +106,9 @@ def get_data_from_json(file_number, filepath, conf: config.Config):  # 从JSON�
                 break
             else:
                 print("OOps")
+                json_data = {}
         except:
+            json_data  = {}
             break
 
     # Return if data not found in all sources
@@ -286,16 +288,18 @@ def trimblank(s: str):
 
 # path = examle:photo , video.in the Project Folder!
 def download_file_with_filename(url, filename, path, conf: config.Config, filepath, failed_folder):
-    switch, proxy, timeout, retry_count, proxytype = config.Config().proxy()
+    switch, proxy, timeout, retry_count, proxytype = conf.proxy()
 
     for i in range(retry_count):
         try:
             if switch == 1:
+                
                 if not os.path.exists(path):
                     os.makedirs(path)
                 proxies = get_proxy(proxy, proxytype)
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'}
+                # headers = {
+                #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'}
+                headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43"}
                 r = requests.get(url, headers=headers, timeout=timeout, proxies=proxies)
                 if r == '':
                     print('[-]Movie Data not found!')
@@ -306,27 +310,31 @@ def download_file_with_filename(url, filename, path, conf: config.Config, filepa
             else:
                 if not os.path.exists(path):
                     os.makedirs(path)
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'}
+                # headers = {
+                #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'}
+                headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43"}
                 r = requests.get(url, timeout=timeout, headers=headers)
+                print("!!!! Here is no proxy")
                 if r == '':
                     print('[-]Movie Data not found!')
                     return 
                 with open(str(path) + "/" + filename, "wb") as code:
                     code.write(r.content)
                 return
-        except requests.exceptions.RequestException:
-            i += 1
-            print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
-        except requests.exceptions.ConnectionError:
-            i += 1
-            print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
-        except requests.exceptions.ProxyError:
-            i += 1
-            print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
-        except requests.exceptions.ConnectTimeout:
-            i += 1
-            print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
+        # except requests.exceptions.RequestException:
+        #     i += 1
+        #     print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
+        # except requests.exceptions.ConnectionError:
+        #     i += 1
+        #     print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
+        # except requests.exceptions.ProxyError:
+        #     i += 1
+        #     print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
+        # except requests.exceptions.ConnectTimeout:
+        #     i += 1
+        #     print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
+        except Exception as e:
+            print(e)
     print('[-]Connect Failed! Please check your Proxy or Network!')
     moveFailedFolder(filepath, failed_folder)
     return
@@ -334,11 +342,16 @@ def download_file_with_filename(url, filename, path, conf: config.Config, filepa
 
 # 封面是否下载成功，否则移动到failed
 def image_download(pic_type, cover, number, c_word, path, conf: config.Config, filepath, failed_folder):
-    if download_file_with_filename(cover, number + c_word + pic_type, path, conf, filepath, failed_folder) == 'failed':
-        moveFailedFolder(filepath, failed_folder)
-        return
-
     switch, _proxy, _timeout, retry, _proxytype = conf.proxy()
+    # print(f"Proxy_swtich: {switch}")
+
+
+    # if download_file_with_filename(cover, number + c_word + pic_type, path, conf, filepath, failed_folder) == 'failed':
+    #     moveFailedFolder(filepath, failed_folder)
+    #     return
+
+    download_file_with_filename(cover, number + c_word + pic_type, path, conf, filepath, failed_folder)
+
     for i in range(retry):
         if os.path.getsize(path + '/' + number + c_word + pic_type) == 0:
             print('[!]Image Download Failed! Trying again. [{}/3]', i + 1)
@@ -347,6 +360,7 @@ def image_download(pic_type, cover, number, c_word, path, conf: config.Config, f
         else:
             break
     if os.path.getsize(path + '/' + number + c_word + pic_type) == 0:
+        moveFailedFolder(filepath, failed_folder)
         return
     print('[+]Image Downloaded!', path + '/' + number + c_word + pic_type)
     # shutil.copyfile(path + '/' + number + c_word + '-fanart.jpg',path + '/' + number + c_word + '-thumb.jpg')

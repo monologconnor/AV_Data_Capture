@@ -195,53 +195,62 @@ def getProduct(html, number):
 
 
 def main(number):
-    html = get_html('https://tellme.pw/avsox')
-    site = etree.HTML(html).xpath('//div[@class="container"]/div/a/@href')[0]
-    a = get_html(site + '/cn/search/' + number)
-    html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
-    result1 = str(html.xpath('//*[@id="waterfall"]/div/a/@href')).strip(" ['']")
-    if result1 == '' or result1 == 'null' or result1 == 'None':
-        a = get_html(site + '/cn/search/' + number.replace('-', '_'))
+
+    try:
+        html = get_html('https://tellme.pw/avsox')
+        site = etree.HTML(html).xpath('//div[@class="container"]/div/a/@href')[0]
+        a = get_html(site + '/cn/search/' + number)
         html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
         result1 = str(html.xpath('//*[@id="waterfall"]/div/a/@href')).strip(" ['']")
         if result1 == '' or result1 == 'null' or result1 == 'None':
-            a = get_html(site + '/cn/search/' + number.replace('_', ''))
+            a = get_html(site + '/cn/search/' + number.replace('-', '_'))
             html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
             result1 = str(html.xpath('//*[@id="waterfall"]/div/a/@href')).strip(" ['']")
-    web = get_html(result1)
-    soup = BeautifulSoup(web, 'lxml')
-    info = str(soup.find(attrs={'class': 'row movie'}))
+            if result1 == '' or result1 == 'null' or result1 == 'None':
+                a = get_html(site + '/cn/search/' + number.replace('_', ''))
+                html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
+                result1 = str(html.xpath('//*[@id="waterfall"]/div/a/@href')).strip(" ['']")
+        web = get_html(result1)
+        soup = BeautifulSoup(web, 'lxml')
+        info = str(soup.find(attrs={'class': 'row movie'}))
 
-    # hcode_search = get_html('https://www.aventertainments.com/ppv/ppv_searchproducts.aspx?languageID=2&vodtypeid=1&keyword=' + number)
-    # html_search = etree.fromstring(hcode_search, etree.HTMLParser())
-    # search_result = getProduct(html_search, number)
-    # search_result = get_html(search_result)
-    # search_result = etree.fromstring(search_result, etree.HTMLParser())
+        # hcode_search = get_html('https://www.aventertainments.com/ppv/ppv_searchproducts.aspx?languageID=2&vodtypeid=1&keyword=' + number)
+        # html_search = etree.fromstring(hcode_search, etree.HTMLParser())
+        # search_result = getProduct(html_search, number)
+        # search_result = get_html(search_result)
+        # search_result = etree.fromstring(search_result, etree.HTMLParser())
 
-    studio = getStudio(info)
+        studio = getStudio(info)
 
-    dic = {
-        'actor': getActor(web),
-        'title': getTitle(web).strip(getNum(web)),
-        'studio': studio,
-        'outline': getOutline(info, studio),#
-        'runtime': getRuntime(info),
-        'director': '', #
-        'release': getRelease(info),
-        'number': getNum(info),
-        'cover': getCover(web),
-        'cover_small': getCover_small(a, number, studio),
-        'thumb': getCover(web),
-        'imagecut': 3,
-        'tag': getTag(web),
-        'label': getLabel(info),
-        'year': getYear(getRelease(info)),  # str(re.search('\d{4}',getRelease(a)).group()),
-        'actor_photo': getActorPhoto(web),
-        'website': result1,
-        'source': 'avsox.py',
-        'series': getSeries(info),
-    }
-    js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
+        dic = {
+            'actor': getActor(web),
+            'title': getTitle(web).strip(getNum(web)),
+            'studio': studio,
+            'outline': getOutline(info, studio),#
+            'runtime': getRuntime(info),
+            'director': '', #
+            'release': getRelease(info),
+            'number': getNum(info),
+            'cover': getCover(web),
+            'cover_small': getCover_small(a, number, studio),
+            'thumb': getCover(web),
+            'imagecut': 3,
+            'tag': getTag(web),
+            'label': getLabel(info),
+            'year': getYear(getRelease(info)),  # str(re.search('\d{4}',getRelease(a)).group()),
+            'actor_photo': getActorPhoto(web),
+            'website': result1,
+            'source': 'avsox.py',
+            'series': getSeries(info),
+        }
+        js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
+
+    except:
+        data = {
+            'title': "",
+        }
+        js = json.dumps(data, ensure_ascii=False, sort_keys=True, indent=4, separators=(",", ":"))
+    
     return js
 
 if __name__ == "__main__":
