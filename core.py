@@ -420,7 +420,7 @@ def print_files(path, c_word, naming_rule, part, cn_sub, json_data, filepath, fa
 def cutImage(imagecut, path, number, c_word):
     if imagecut == 1: # 剪裁大封面
         try:
-            img = Image.open(path + '/' + number + c_word + '-fanart.jpg')
+            img = Image.open(path + '/' + number + c_word + '-thumb.jpg')
             imgSize = img.size
             w = img.width
             h = img.height

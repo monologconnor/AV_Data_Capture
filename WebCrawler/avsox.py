@@ -79,7 +79,7 @@ def getCover_small(htmlcode, number, studio):
 
 
     if "1pondo" in studio:
-
+        pass
 
 
     elif "Caribbean" in stuido:
@@ -99,7 +99,7 @@ def getCover_small(htmlcode, number, studio):
             result = html.xpath("//*[@class='section is-wide']/p/text()")[0]
     elif "HEYZO" in stuido:
 
-        
+        pass
     elif "Tokyo" in stuido:
         pass
     else:
