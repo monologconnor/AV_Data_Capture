@@ -20,14 +20,21 @@ def getActor(a): #//*[@id="center_column"]/div[2]/div[1]/div/table/tbody/tr[1]/t
     return str(result1+result2).strip('+').replace("', '",'').replace('"','').replace('/',',')
 
 def getActor_Real(number):
-    # htmlcode = get_html('https://seesaawiki.jp/av_neme/search?keywords=' + number, return_type = "object")
-    # htmlcode.encoding = 'euc-jp'
-    # htmlcode = htmlcode.text
-    # return ""
-    htmlcode = get_html('https://www.roguelibrarian.com/?s=' + number)
+    htmlcode = get_html('https://seesaawiki.jp/av_neme/search?keywords=' + number, return_type = "object")
+    htmlcode.encoding = 'euc-jp'
+    htmlcode = htmlcode.text
     html = etree.fromstring(htmlcode, etree.HTMLParser())
-    name_list = html.xpath('//*[@class="sh_box"]/a/text()')
-    # name_list = html.xpath('//*[@class="keyword"]/a/text()')
+    
+    key_list = html.xpath('//*[@class="keyword"]/a/text()')
+    url_list = html.xpath('//*[@class="url"]/a/@href')
+    result = []
+
+
+    for i in range(len(url_list)):
+        if check_actor_url(url_list[i]):
+            result.append(key_list[i])
+
+    return result
     # result = ''
     # print(f"> Choosing these data for [{number}]")
     # if len(name_list) != 0:
@@ -41,9 +48,17 @@ def getActor_Real(number):
     #         result =  ''
 
     # return result
-    name_list = list(set(name_list))
+    # name_list = list(set(name_list))
 
-    return name_list
+    # return name_list
+
+def check_actor_url(html):
+    html = get_html(html, return_type = "object")
+    html.encoding = 'euc-jp'
+    html = html.text
+
+    return "プロフィール" in html
+
 
 def getStudio(a):
     html = etree.fromstring(a, etree.HTMLParser()) #//table/tr[1]/td[1]/text()
@@ -97,28 +112,14 @@ def getTag(a):
             pass
     return total
     
-def getCover_javdb(number):
-    html = get_html('https://javdb.com/search?q='+number+'&f=all')
+def getCover_small(number):
+    uagent = "Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/<Chrome Rev> Mobile Safari/<WebKit Rev>"
+
+    html = get_html("https://sp.mgstage.com/product/product_detail/SP-"+number+"/", ua=uagent, cookies={'adc':'1'})
     html = etree.fromstring(html, etree.HTMLParser())
-    ids =html.xpath('//*[@id="videos"]/div/div/a/div[contains(@class, "uid")]/text()')
+    # result = ""
+    result = html.xpath("//*[@class='sample-image-wrap h1']/img/@src")[0]
     
-    # print(f"Current code is {number}:")
-    # for i in range(len(ids)):
-    #     print(f"> ({i}) {ids[i]}")
-    # print(f"> ({len(ids)}) Not in here")
-    # i = int(input('> '))
-    # if i >= len(ids):
-    #     result = ""
-    # else:
-    #     result = html.xpath('//*[@class="item-image fix-scale-cover"]/img/@data-src')[i]
-
-    result = ''
-    for i in range(len(ids)):
-        if (ids[i] in number):
-            print(f"Selected {ids[i]}")
-            result = html.xpath('//*[@class="item-image fix-scale-cover"]/img/@data-src')[i]
-            break
-
     return result
 
 def getCover(htmlcode):
@@ -151,7 +152,7 @@ def main(number2):
         soup = BeautifulSoup(htmlcode, 'lxml')
         a = str(soup.find(attrs={'class': 'detail_data'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
         b = str(soup.find(attrs={'id': 'introduction'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
-        #print(b)
+
         dic = {
             'title': getTitle(htmlcode).replace("\\n",'').replace('        ',''),
             'studio': getStudio(a),
@@ -162,7 +163,7 @@ def main(number2):
             'release': getRelease(a),
             'number': getNum(a),
             'cover': getCover(htmlcode),
-            'cover_small': getCover_javdb(number),
+            'cover_small': getCover_small(number),
             'thumb': getCover(htmlcode),
             'imagecut': 3,
             'tag': getTag(a),
@@ -174,7 +175,7 @@ def main(number2):
             'series': getSeries(a),
         }
     except Exception as e:
-        # print(e)
+        print(e)
         dic = {"title": ""}
     js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
     return js
