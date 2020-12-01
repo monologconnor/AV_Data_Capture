@@ -19,6 +19,7 @@ from WebCrawler import xcity
 from WebCrawler import javlib
 from WebCrawler import dlsite
 from WebCrawler import avent
+from WebCrawler import fanza_anime
 
 
 def escape_path(path, escape_literals: str):  # Remove escape literals
@@ -60,6 +61,7 @@ def get_data_from_json(file_number, filepath, conf: config.Config):  # ä»ŽJSONè¿
         "xcity": xcity.main,
         "javlib": javlib.main,
         "dlsite": dlsite.main,
+        "fanza_anime": fanza_anime.main,
     }
 
     # default fetch order list, from the beginning to the end
@@ -289,14 +291,16 @@ def trimblank(s: str):
 # path = examle:photo , video.in the Project Folder!
 def download_file_with_filename(url, filename, path, conf: config.Config, filepath, failed_folder):
     switch, proxy, timeout, retry_count, proxytype = conf.proxy()
+    proxies = get_proxy(proxy, proxytype)
 
     for i in range(retry_count):
         try:
-            if switch == 1:
-                
+            # switch = 1
+            # print(f"switch is now                   {switch}")
+            if switch == '1': 
+                # print("!!!! Here is aaaaaaaaaaaaaaaaaa proxy")
                 if not os.path.exists(path):
-                    os.makedirs(path)
-                proxies = get_proxy(proxy, proxytype)
+                    os.mkdir(path)
                 # headers = {
                 #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'}
                 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43"}
@@ -308,31 +312,31 @@ def download_file_with_filename(url, filename, path, conf: config.Config, filepa
                     code.write(r.content)
                 return
             else:
+                print("!!!! Here is no proxy")
                 if not os.path.exists(path):
                     os.makedirs(path)
                 # headers = {
                 #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'}
                 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43"}
                 r = requests.get(url, timeout=timeout, headers=headers)
-                print("!!!! Here is no proxy")
                 if r == '':
                     print('[-]Movie Data not found!')
                     return 
                 with open(str(path) + "/" + filename, "wb") as code:
                     code.write(r.content)
                 return
-        # except requests.exceptions.RequestException:
-        #     i += 1
-        #     print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
-        # except requests.exceptions.ConnectionError:
-        #     i += 1
-        #     print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
-        # except requests.exceptions.ProxyError:
-        #     i += 1
-        #     print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
-        # except requests.exceptions.ConnectTimeout:
-        #     i += 1
-        #     print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
+        except requests.exceptions.RequestException:
+            i += 1
+            print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
+        except requests.exceptions.ConnectionError:
+            i += 1
+            print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
+        except requests.exceptions.ProxyError:
+            i += 1
+            print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
+        except requests.exceptions.ConnectTimeout:
+            i += 1
+            print('[-]Image Download :  Connect retry ' + str(i) + '/' + str(retry_count))
         except Exception as e:
             print(e)
     print('[-]Connect Failed! Please check your Proxy or Network!')

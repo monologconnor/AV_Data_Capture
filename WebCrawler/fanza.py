@@ -144,6 +144,13 @@ def getTag(text):
     return result
 
 
+def getCover_small_Amazon():
+    # ._AC_SL1500_.jpg
+    pass
+
+def getThumb_Maho():
+    pass
+
 def getCover(text, number):
     html = etree.fromstring(text, etree.HTMLParser())
     cover_number = number
