@@ -24,8 +24,11 @@ def getStudio(html):
     return result
 
 def getSeries(html):
-    result = html.xpath("//td[contains(text(), 'シリーズ')]/..//a/text()")[0]
-
+    result = html.xpath("//td[contains(text(), 'シリーズ')]/..//a/text()")
+    if (len(result) > 0):
+        result = html.xpath("//td[contains(text(), 'シリーズ')]/..//a/text()")[0]
+    else:
+        result = ""
     return result
 
 def getRelease(html):
@@ -132,6 +135,9 @@ def main(title):
         'series': getSeries(html),
     }
 
+    if dic["series"] == "":
+        dic["series"] = series
+
     js = json.dumps(
         dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(",", ":")
     )
@@ -141,7 +147,8 @@ def main(title):
 
 
 if __name__ == "__main__":
-    title = "姫様LOVEライフ！ 生真面目ブルマ姫・ルリア～ワイセツおねだり王女♥～"
+    # title = "姫様LOVEライフ！ 生真面目ブルマ姫・ルリア～ワイセツおねだり王女♥～"
+    title = "ボクと彼女（ナース）の研修日誌 THE ANIMATION"
     print(main(title))
     # html = get_html("https://animehonpo.com/products/list?category_id=&tag_id=&name="+title)
 
