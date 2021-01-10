@@ -1,6 +1,6 @@
 import requests
 from lxml import etree
-
+import re
 import config
 
 SUPPORT_PROXY_TYPE = ("http", "socks5", "socks5h")
@@ -52,7 +52,7 @@ def get_html(url, cookies: dict = None, ua: str = None, return_type: str = None)
 
     for i in range(retry_count):
         try:
-            if switch == '1':
+            if switch == '1' or switch == 1:
                 result = requests.get(str(url), headers=headers, timeout=timeout, proxies=proxies, cookies=cookies)
             else:
                 result = requests.get(str(url), headers=headers, timeout=timeout, cookies=cookies)
@@ -61,6 +61,8 @@ def get_html(url, cookies: dict = None, ua: str = None, return_type: str = None)
 
             if return_type == "object":
                 return result
+            elif return_type == "content":
+                return result.content
             else:
                 return result.text
 
@@ -78,7 +80,7 @@ def post_html(url: str, query: dict) -> requests.Response:
 
     for i in range(retry_count):
         try:
-            if switch == 1:
+            if switch == 1 or switch == '1':
                 result = requests.post(url, data=query, proxies=proxies,headers=headers, timeout=timeout)
             else:
                 result = requests.post(url, data=query, headers=headers, timeout=timeout)
@@ -99,7 +101,7 @@ def get_javlib_cookie() -> [dict, str]:
     # Get __cfduid/cf_clearance and user-agent
     for i in range(retry_count):
         try:
-            if switch == 1:
+            if switch == 1 or switch == '1':
                 raw_cookie, user_agent = cloudscraper.get_cookie_string(
                     "http://www.m45e.com/",
                     proxies=proxies
@@ -465,3 +467,14 @@ def translate(src:str,target_language:str="zh_cn"):
     translate_list = [i["trans"] for i in result.json()["sentences"]]
 
     return "".join(translate_list)
+
+# ========================================================================是否为无码
+def is_uncensored(number):
+    if re.match('^\d{4,}', number) or re.match('n\d{4}', number) or 'HEYZO' in number.upper():
+        return True
+    configs = config.Config().get_uncensored()
+    prefix_list = str(configs).split(',')
+    for pre in prefix_list:
+        if pre.upper() in number.upper():
+            return True
+    return False

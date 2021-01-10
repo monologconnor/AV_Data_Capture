@@ -169,6 +169,16 @@ def getCover_uncen_small(html, number):
         html = etree.fromstring(html, etree.HTMLParser())
         result = html.xpath("//*[@class='photo-frame']/img/@src")[0]
     return result
+def getExtrafanart(htmlcode):  # 获取剧照
+    html_pather = re.compile(r'<div id=\"sample-waterfall\">[\s\S]*?</div></a>\s*?</div>')
+    html = html_pather.search(htmlcode)
+    if html:
+        html = html.group()
+        extrafanart_pather = re.compile(r'<a class=\"sample-box\" href=\"(.*?)\"')
+        extrafanart_imgs = extrafanart_pather.findall(html)
+        if extrafanart_imgs:
+            return extrafanart_imgs
+    return ''
 
 def main_uncensored(number):
     htmlcode = get_html('https://www.javbus.com/ja/' + number)
@@ -195,6 +205,7 @@ def main_uncensored(number):
         'cover': getCover(htmlcode),
         'cover_small': getCover_uncen_small(htmlcode, number),
         'tag': getTag(htmlcode),
+        'extrafanart': getExtrafanart(htmlcode),
         'label': getSerise(htmlcode),
         'imagecut': 3,
         'actor_photo': '',
@@ -233,6 +244,7 @@ def main(number):
             'thumb': getThumb(cid, htmlcode),
             'imagecut': 1,
             'tag': getTag(htmlcode),
+            'extrafanart': getExtrafanart(htmlcode),
             'label': getSerise(htmlcode),
             'actor_photo': getActorPhoto(htmlcode),
             'website': 'https://www.javbus.com/' + number,

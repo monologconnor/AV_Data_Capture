@@ -145,7 +145,20 @@ def getSeries(a):
     result2 = str(html.xpath('//th[contains(text(),"シリーズ")]/../td/text()')).strip(" ['']").strip('\\n    ').strip(
         '\\n')
     return str(result1 + result2).strip('+').replace("', '", '').replace('"', '')
+
+def getExtrafanart(htmlcode):  # 获取剧照
+    html_pather = re.compile(r'<dd>\s*?<ul>[\s\S]*?</ul>\s*?</dd>')
+    html = html_pather.search(htmlcode)
+    if html:
+        html = html.group()
+        extrafanart_pather = re.compile(r'<a class=\"sample_image\" href=\"(.*?)\"')
+        extrafanart_imgs = extrafanart_pather.findall(html)
+        if extrafanart_imgs:
+            return extrafanart_imgs
+    return ''
+
 def main(number2):
+<<<<<<< HEAD
     try:
         number=number2.upper()
         htmlcode=str(get_html('https://www.mgstage.com/product/product_detail/'+str(number)+'/',cookies={'adc':'1'}))
@@ -177,6 +190,34 @@ def main(number2):
     except Exception as e:
         print(e)
         dic = {"title": ""}
+=======
+    number=number2.upper()
+    htmlcode=str(get_html('https://www.mgstage.com/product/product_detail/'+str(number)+'/',cookies={'adc':'1'}))
+    soup = BeautifulSoup(htmlcode, 'lxml')
+    a = str(soup.find(attrs={'class': 'detail_data'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
+    b = str(soup.find(attrs={'id': 'introduction'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
+    #print(b)
+    dic = {
+        'title': getTitle(htmlcode).replace("\\n",'').replace('        ',''),
+        'studio': getStudio(a),
+        'outline': getOutline(b),
+        'runtime': getRuntime(a),
+        'director': getDirector(a),
+        'actor': getActor(a),
+        'release': getRelease(a),
+        'number': getNum(a),
+        'cover': getCover(htmlcode),
+        'imagecut': 0,
+        'tag': getTag(a),
+        'label':getLabel(a),
+        'extrafanart': getExtrafanart(htmlcode),
+        'year': getYear(getRelease(a)),  # str(re.search('\d{4}',getRelease(a)).group()),
+        'actor_photo': '',
+        'website':'https://www.mgstage.com/product/product_detail/'+str(number)+'/',
+        'source': 'mgstage.py',
+        'series': getSeries(a),
+    }
+>>>>>>> upstream/master
     js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
     return js
     #print(htmlcode)
