@@ -7,7 +7,8 @@ from bs4 import BeautifulSoup#need install
 import json
 from ADC_function import *
 from WebCrawler import fanza
-
+from WebCrawler import javdb
+from WebCrawler import amazon
 
 def getActorPhoto(htmlcode): #//*[@id="star_qdt"]/li/a/img
     soup = BeautifulSoup(htmlcode, 'lxml')
@@ -54,8 +55,13 @@ def getCover(htmlcode):  #获取封面链接
 #     return result
 def getCover_small(cid):
     result = f"https://pics.dmm.co.jp/digital/video/{cid}/{cid}ps.jpg"
-
     return result
+
+def getCover_small_by_title(title):
+    return amazon.getCover_small_by_title(title)
+
+def getTrailer(number):
+    return javdb.getTrailer_by_number(number)
 
 
 
@@ -191,9 +197,10 @@ def main_uncensored(number):
     avent_html = get_html(search_result)
     avent_html = etree.fromstring(htmlcode, etree.HTMLParser())
 
+    title = str(re.sub('\w+-\d+-','',getTitle(htmlcode))).replace(getNum(htmlcode)+'-','')
 
     dic = {
-        'title': str(re.sub('\w+-\d+-','',getTitle(htmlcode))).replace(getNum(htmlcode)+'-',''),
+        'title': title,
         'studio': getStudio(htmlcode),
         'year': getYear(htmlcode),
         'outline': getOutline_uncen(avent_html),
@@ -230,8 +237,9 @@ def main(number):
             dww_htmlcode = fanza.main_htmlcode(getCID(htmlcode))
         except:
             dww_htmlcode = ''
+        title = str(re.sub('\w+-\d+-', '', getTitle(htmlcode)))
         dic = {
-            'title': str(re.sub('\w+-\d+-', '', getTitle(htmlcode))),
+            'title': title,
             'studio': getStudio(htmlcode),
             'year': str(re.search('\d{4}', getYear(htmlcode)).group()),
             'outline': getOutline(dww_htmlcode),
@@ -241,8 +249,10 @@ def main(number):
             'release': getRelease(htmlcode),
             'number': getNum(htmlcode),
             'cover': getCover(htmlcode),
+            'cover_small': getCover_small_by_title(title),
             'thumb': getThumb(cid, htmlcode),
-            'imagecut': 1,
+            'trailer': getTrailer(number),
+            'imagecut': 3,
             'tag': getTag(htmlcode),
             'extrafanart': getExtrafanart(htmlcode),
             'label': getSerise(htmlcode),

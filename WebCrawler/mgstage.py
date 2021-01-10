@@ -158,39 +158,6 @@ def getExtrafanart(htmlcode):  # 获取剧照
     return ''
 
 def main(number2):
-<<<<<<< HEAD
-    try:
-        number=number2.upper()
-        htmlcode=str(get_html('https://www.mgstage.com/product/product_detail/'+str(number)+'/',cookies={'adc':'1'}))
-        soup = BeautifulSoup(htmlcode, 'lxml')
-        a = str(soup.find(attrs={'class': 'detail_data'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
-        b = str(soup.find(attrs={'id': 'introduction'})).replace('\n                                        ','').replace('                                ','').replace('\n                            ','').replace('\n                        ','')
-
-        dic = {
-            'title': getTitle(htmlcode).replace("\\n",'').replace('        ',''),
-            'studio': getStudio(a),
-            'outline': getOutline(b),
-            'runtime': getRuntime(a),
-            'director': getDirector(a),
-            'actor': getActor_Real(number),
-            'release': getRelease(a),
-            'number': getNum(a),
-            'cover': getCover(htmlcode),
-            'cover_small': getCover_small(number),
-            'thumb': getCover(htmlcode),
-            'imagecut': 3,
-            'tag': getTag(a),
-            'label':getLabel(a),
-            'year': getYear(getRelease(a)),  # str(re.search('\d{4}',getRelease(a)).group()),
-            'actor_photo': '',
-            'website':'https://www.mgstage.com/product/product_detail/'+str(number)+'/',
-            'source': 'mgstage.py',
-            'series': getSeries(a),
-        }
-    except Exception as e:
-        print(e)
-        dic = {"title": ""}
-=======
     number=number2.upper()
     htmlcode=str(get_html('https://www.mgstage.com/product/product_detail/'+str(number)+'/',cookies={'adc':'1'}))
     soup = BeautifulSoup(htmlcode, 'lxml')
@@ -203,11 +170,13 @@ def main(number2):
         'outline': getOutline(b),
         'runtime': getRuntime(a),
         'director': getDirector(a),
-        'actor': getActor(a),
+        'actor': getActor_Real(number),
         'release': getRelease(a),
         'number': getNum(a),
         'cover': getCover(htmlcode),
-        'imagecut': 0,
+        'cover_small': getCover_small(number),
+        'thumb': getCover(htmlcode),
+        'imagecut': 3,
         'tag': getTag(a),
         'label':getLabel(a),
         'extrafanart': getExtrafanart(htmlcode),
@@ -217,7 +186,6 @@ def main(number2):
         'source': 'mgstage.py',
         'series': getSeries(a),
     }
->>>>>>> upstream/master
     js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
     return js
     #print(htmlcode)

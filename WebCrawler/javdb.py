@@ -11,7 +11,7 @@ from WebCrawler import javbus
 # import io
 # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, errors = 'replace', line_buffering = True)
 
-thumb_need = ['STARS', 'SDDE']
+# thumb_need = ['STARS', 'SDDE']
 
 def getTitle(a):
     html = etree.fromstring(a, etree.HTMLParser())
@@ -130,7 +130,6 @@ def getCover_small(a, index=0):
     # javdb sometime returns multiple results
     # DO NOT just get the firt one, get the one with correct index number
     html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
-<<<<<<< HEAD
     # 2020.7.17 Repair Cover Url crawl
     result = html.xpath("//*[@class='item-image fix-scale-cover']/img/@data-src")[index]
     if 'placeholder' in result:
@@ -138,7 +137,26 @@ def getCover_small(a, index=0):
     if not 'https' in result:
         result = 'https:' + result
     return result
-def getCover(number):
+
+    # try:
+    #     result = html.xpath("//div[@class='item-image fix-scale-cover']/img/@src")[index]
+    #     if not 'https' in result:
+    #         result = 'https:' + result
+    #     return result
+    # except: # 2020.7.17 Repair Cover Url crawl
+    #     try:
+    #         result = html.xpath("//div[@class='item-image fix-scale-cover']/img/@data-src")[index]
+    #         if not 'https' in result:
+    #             result = 'https:' + result
+    #         return result
+    #     except:
+    #         result = html.xpath("//div[@class='item-image']/img/@data-src")[index]
+    #         if not 'https' in result:
+    #             result = 'https:' + result
+    #         return result
+
+
+def getCover(cid):
     # html = etree.fromstring(htmlcode, etree.HTMLParser())
     # try:
     #     result = html.xpath("//div[contains(@class, 'column-video-cover')]/a/img/@src")[0]
@@ -154,27 +172,11 @@ def getCover(number):
     result = f"https://pics.dmm.co.jp/digital/video/{cid}/{cid}pl.jpg"
     return result
 
-def getThumb(htmlcode):
+def getThumb(cid):
     modified = cid.replace("00", '')
     result = f"https://pics.dmm.co.jp/mono/movie/adult/{modified}/{modified}pl.jpg"
-=======
-    try:
-        result = html.xpath("//div[@class='item-image fix-scale-cover']/img/@src")[index]
-        if not 'https' in result:
-            result = 'https:' + result
-        return result
-    except: # 2020.7.17 Repair Cover Url crawl
-        try:
-            result = html.xpath("//div[@class='item-image fix-scale-cover']/img/@data-src")[index]
-            if not 'https' in result:
-                result = 'https:' + result
-            return result
-        except:
-            result = html.xpath("//div[@class='item-image']/img/@data-src")[index]
-            if not 'https' in result:
-                result = 'https:' + result
-            return result
 
+    return result
 
 def getTrailer(htmlcode):  # 获取预告片
     video_pather = re.compile(r'<video id\=\".*?>\s*?<source src=\"(.*?)\"')
@@ -188,6 +190,27 @@ def getTrailer(htmlcode):  # 获取预告片
         video_url = ''
     return video_url
 
+def getTrailer_by_number(number):
+    number = number.upper()
+    try:
+        query_result = get_html('https://javdb.com/search?q=' + number + '&f=all')
+    except:
+        query_result = get_html('https://javdb4.com/search?q=' + number + '&f=all')
+    html = etree.fromstring(query_result, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
+    # javdb sometime returns multiple results,
+    # and the first elememt maybe not the one we are looking for
+    # iterate all candidates and find the match one
+    urls = html.xpath('//*[@id="videos"]/div/div/a/@href')
+    # 记录一下欧美的ids  ['Blacked','Blacked']
+    if re.search(r'[a-zA-Z]+\.\d{2}\.\d{2}\.\d{2}', number):
+        correct_url = urls[0]
+    else:
+        ids =html.xpath('//*[@id="videos"]/div/div/a/div[contains(@class, "uid")]/text()')
+        correct_url = urls[ids.index(number)]
+    detail_page = get_html('https://javdb.com' + correct_url)
+
+    return getTrailer(detail_page)
+
 def getExtrafanart(htmlcode):  # 获取剧照
     html_pather = re.compile(r'<div class=\"tile\-images preview\-images\">[\s\S]*?</a>\s+?</div>\s+?</div>')
     html = html_pather.search(htmlcode)
@@ -199,14 +222,13 @@ def getExtrafanart(htmlcode):  # 获取剧照
             return extrafanart_imgs
     return ''
 
-def getCover(htmlcode):
-    html = etree.fromstring(htmlcode, etree.HTMLParser())
-    try:
-        result = html.xpath("//div[contains(@class, 'column-video-cover')]/a/img/@src")[0]
-    except: # 2020.7.17 Repair Cover Url crawl
-        result = html.xpath("//div[contains(@class, 'column-video-cover')]/img/@src")[0]
->>>>>>> upstream/master
-    return result
+# def getCover(htmlcode):
+#     html = etree.fromstring(htmlcode, etree.HTMLParser())
+#     try:
+#         result = html.xpath("//div[contains(@class, 'column-video-cover')]/a/img/@src")[0]
+#     except: # 2020.7.17 Repair Cover Url crawl
+#         result = html.xpath("//div[contains(@class, 'column-video-cover')]/img/@src")[0]
+#     return result
 
 
 def getDirector(a):
@@ -285,14 +307,11 @@ def main(number):
             'director': getDirector(detail_page),
             'release': getRelease(detail_page),
             'number': number,
-            'cover': getCover(detail_page),
+            'cover': getCover(cid),
             'cover_small': cover_small,
-<<<<<<< HEAD
-            'thumb': getThumb(detail_page),
-=======
+            'thumb': getThumb(cid),
             'trailer': getTrailer(detail_page),
             'extrafanart': getExtrafanart(detail_page),
->>>>>>> upstream/master
             'imagecut': imagecut,
             'tag': getTag(detail_page),
             'label': getLabel(detail_page),
@@ -312,11 +331,8 @@ def main(number):
 # main('DV-1562')
 # input("[+][+]Press enter key exit, you can check the error messge before you exit.\n[+][+]按回车键结束，你可以在结束之前查看和错误信息。")
 if __name__ == "__main__":
-<<<<<<< HEAD
     number = "STARS-252"
-    print(main('STARS-252'))
-=======
+    # print(main('STARS-252'))
     # print(main('blacked.20.05.30'))
     # print(main('AGAV-042'))
     print(main('BANK-022'))
->>>>>>> upstream/master
