@@ -71,8 +71,8 @@ def getCover(html):
 
     return result
 
-def getCover_by_title(title):
-    return amazon.getCover_small_by_title(title)
+def getCover_by_amazon(html):
+    return amazon.getCover_small(html)
 
 def getOutline(html):
     result = " ".join(html.xpath("//*[@class='mg-b20 lh4']/p/text()"))
@@ -84,6 +84,7 @@ def getOutline(html):
 
 
 def main(title):
+    title = title.replace("OVA ", '')
     series = title.split(' ')[0].split('~')[0]
     html = "https://www.dmm.co.jp/mono/-/search/=/searchstr=" + series + "/"
 
@@ -117,14 +118,23 @@ def main(title):
     )
     html = etree.fromstring(html, etree.HTMLParser())
 
-    cover = getCover_by_title(getTitle(html))
+    amazon_html = amazon.getUrl_html(getTitle(html))
+    amazon_html = etree.fromstring(amazon_html, etree.HTMLParser())
+
+    cover = amazon.getCover_small(amazon_html)
+    if cover == "":
+        cover = getCover(html)
+
+    outline = amazon.getOutline(amazon_html)
+    if outline.strip() == "" :
+        outline = getOutline(html)
 
     dic = {
         'actor': [],
         "actor_photo": "",
         'title': getTitle(html),
         'studio': getStudio(html),
-        'outline': getOutline(html),
+        'outline': outline,
         'runtime': getRuntime(html),
         'release': getRelease(html),
         'number': getTitle(html),
@@ -153,7 +163,9 @@ def main(title):
 
 if __name__ == "__main__":
     # title = "姫様LOVEライフ！ 生真面目ブルマ姫・ルリア～ワイセツおねだり王女♥～"
-    title = "ボクと彼女（ナース）の研修日誌 THE ANIMATION"
+    # title = "ボクと彼女（ナース）の研修日誌 THE ANIMATION"
+    # title = "エルフの教え子と先生 上巻秘密の放課後デート"
+    title = "OVA エッチなお姉ちゃんに搾られたい ＃1 優しく搾ってくれるお姉ちゃんたち"
     print(main(title))
     # html = get_html("https://animehonpo.com/products/list?category_id=&tag_id=&name="+title)
 
