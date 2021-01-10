@@ -118,7 +118,7 @@ def main(title):
     )
     html = etree.fromstring(html, etree.HTMLParser())
 
-    amazon_html = amazon.getUrl_html(getTitle(html))
+    amazon_html = amazon.getUrl_html(title)
     amazon_html = etree.fromstring(amazon_html, etree.HTMLParser())
 
     cover = amazon.getCover_small(amazon_html)
