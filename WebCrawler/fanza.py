@@ -323,7 +323,11 @@ def main_htmlcode(number):
     chosen_url = ""
     for url in fanza_urls:
         chosen_url = url + fanza_search_number
-        htmlcode = get_html(chosen_url)
+        htmlcode = get_html(
+            "https://www.dmm.co.jp/age_check/=/declared=yes/?{}".format(
+                urlencode({"rurl": chosen_url})
+            )
+        )
         if "404 Not Found" not in htmlcode:
             break
     if "404 Not Found" in htmlcode:

@@ -8,7 +8,7 @@ import json
 from urllib.parse import urlencode
 from ADC_function import *
 import difflib
-# from WebCrawler import fanza
+from WebCrawler import amazon
 
 def calSimi(a, b):
     return difflib.SequenceMatcher(None, a, b).ratio()
@@ -71,6 +71,9 @@ def getCover(html):
 
     return result
 
+def getCover_by_title(title):
+    return amazon.getCover_small_by_title(title)
+
 def getOutline(html):
     result = " ".join(html.xpath("//*[@class='mg-b20 lh4']/p/text()"))
 
@@ -114,6 +117,8 @@ def main(title):
     )
     html = etree.fromstring(html, etree.HTMLParser())
 
+    cover = getCover_by_title(getTitle(html))
+
     dic = {
         'actor': [],
         "actor_photo": "",
@@ -123,9 +128,9 @@ def main(title):
         'runtime': getRuntime(html),
         'release': getRelease(html),
         'number': getTitle(html),
-        'cover': getCover(html),
-        'thumb': getCover(html),
-        'imagecut': 1,
+        'cover': cover,
+        # 'thumb': cover,
+        'imagecut': 0,
         'director': '',
         'tag': getTag(html),
         "label": getLabel(html),

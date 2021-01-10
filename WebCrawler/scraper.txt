@@ -1,4 +1,0 @@
- javbus
-use javbus and grap plot from fanza, grab STARS pic from javbus
-no javlib
-done with mgstage

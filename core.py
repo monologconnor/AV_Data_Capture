@@ -736,11 +736,18 @@ def core_main(file_path, number_th, conf: config.Config):
             small_cover_check(path, number,  json_data.get('cover_small'), c_word, conf, filepath, conf.failed_folder())
 
         # creatFolder会返回番号路径
-        image_download('-fanart.jpg', json_data['cover'], number, c_word, path, conf, filepath, conf.failed_folder())
-        image_download('-thumb.jpg', json_data['thumb'], number, c_word, path, conf, filepath, conf.failed_folder())
+        try:
+            if json_data.get('cover'):
+                image_download('-fanart.jpg', json_data['cover'], number, c_word, path, conf, filepath, conf.failed_folder())
+        except:
+            pass
 
-        # image_download( json_data.get('cover'), number, c_word, path, conf, filepath, conf.failed_folder())
-        # image_download( json_data.get('thumb'), number, c_word, path, conf, filepath, conf.failed_folder())
+        try:
+            if json_data.get('thumb'):
+                image_download('-thumb.jpg', json_data['thumb'], number, c_word, path, conf, filepath, conf.failed_folder())
+        except:
+            pass
+
         try:
             # 下载预告片
             if json_data.get('trailer'):
