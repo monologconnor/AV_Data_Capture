@@ -28,6 +28,10 @@ def getCover_small(html):
     result =  html.xpath("//*[@id='imgTagWrapperId']/img/@data-old-hires")[0]
     return result
 
+def getTitle(html):
+    result = html.xpath("//*[@id='productTitle']/text()")[0].strip().replace(" [DVD]", "")
+    return result
+
 def getCover_small_by_title(title):
     cookie = {
         "session-id": "356-8483597-6837505",
