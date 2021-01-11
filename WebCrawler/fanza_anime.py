@@ -132,7 +132,7 @@ def main(title):
     dic = {
         'actor': [],
         "actor_photo": "",
-        'title': getTitle(html),
+        'title': amazon.getTitle(amazon_html),
         'studio': getStudio(html),
         'outline': outline,
         'runtime': getRuntime(html),
