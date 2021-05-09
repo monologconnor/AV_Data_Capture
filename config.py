@@ -1,7 +1,7 @@
 import os
+import sys
 import configparser
 import codecs
-
 
 class Config:
     def __init__(self, path: str = "config.ini"):
@@ -12,16 +12,20 @@ class Config:
             except:
                 self.conf.read(path, encoding="utf-8")
         else:
-            try:
-                self.conf = configparser.ConfigParser()
-                try: # From single crawler debug use only
-                    self.conf.read('../' + path, encoding="utf-8-sig")
-                except:
-                    self.conf.read('../' + path, encoding="utf-8")
-            except Exception as e:
-                print("[-]Config file not found! Use the default settings")
-                print("[-]",e)
-                self.conf = self._default_config()
+            print("[-]Config file not found!")
+            sys.exit(2)
+            # self.conf = self._default_config()
+            # try:
+            #     self.conf = configparser.ConfigParser()
+            #     try: # From single crawler debug use only
+            #         self.conf.read('../' + path, encoding="utf-8-sig")
+            #     except:
+            #         self.conf.read('../' + path, encoding="utf-8")
+            # except Exception as e:
+            #     print("[-]Config file not found! Use the default settings")
+            #     print("[-]",e)
+            #     sys.exit(3)
+            #     #self.conf = self._default_config()
 
     def main_mode(self) -> str:
         try:
@@ -43,6 +47,8 @@ class Config:
         return self.conf.getboolean("common", "auto_exit")
     def transalte_to_sc(self) -> bool:
         return self.conf.getboolean("common", "transalte_to_sc")
+    def multi_threading(self) -> bool:
+        return self.conf.getboolean("common", "multi_threading")
     def is_transalte(self) -> bool:
         return self.conf.getboolean("transalte", "switch")
     def is_trailer(self) -> bool:
@@ -73,8 +79,15 @@ class Config:
             return extrafanart_download
         except ValueError:
             self._exit("extrafanart_folder")
-            
-    def transalte_values(self) -> bool:
+    def get_transalte_engine(self) -> str:
+        return self.conf.get("transalte","engine")
+    # def get_transalte_appId(self) ->str:
+    #     return self.conf.get("transalte","appid")
+    def get_transalte_key(self) -> str:
+        return self.conf.get("transalte","key")
+    def get_transalte_delay(self) -> int:
+        return self.conf.getint("transalte","delay")
+    def transalte_values(self) -> str:
         return self.conf.get("transalte", "values")
     def proxy(self) -> [str, int, int, str]:
         try:
@@ -87,6 +100,9 @@ class Config:
             return switch, proxy, timeout, retry, proxytype
         except ValueError:
             self._exit("common")
+
+    def cacert_file(self) -> str:
+        return self.conf.get('proxy', 'cacert_file')
             
     def media_type(self) -> str:
         return self.conf.get('media', 'media_type')
@@ -153,6 +169,8 @@ class Config:
         conf.set(sec2, "timeout", "5")
         conf.set(sec2, "retry", "3")
         conf.set(sec2, "type", "socks5")
+        conf.set(sec2, "cacert_file", "")
+
 
         sec3 = "Name_Rule"
         conf.add_section(sec3)
@@ -180,6 +198,10 @@ class Config:
         sec8 = "transalte"
         conf.add_section(sec8)
         conf.set(sec8, "switch", "0")
+        conf.set(sec8, "engine", "google-free")
+        # conf.set(sec8, "appid", "")
+        conf.set(sec8, "key", "")
+        conf.set(sec8, "delay", "1")
         conf.set(sec8, "values", "title,outline")
         
         sec9 = "trailer"
@@ -225,4 +247,8 @@ if __name__ == "__main__":
     print(config.escape_folder())
     print(config.debug())
     print(config.is_transalte())
+    print(config.get_transalte_engine())
+    # print(config.get_transalte_appId())
+    print(config.get_transalte_key())
+    print(config.get_transalte_delay())
     print(config.transalte_values())

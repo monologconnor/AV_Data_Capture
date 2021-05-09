@@ -7,7 +7,14 @@ from bs4 import BeautifulSoup#need install
 import json
 from ADC_function import *
 
-
+'''
+API
+注册：https://www.airav.wiki/api/auth/signup
+设置：https://www.airav.wiki/api/get_web_settings
+搜索：https://www.airav.wiki/api/video/list?lng=zh-CN&search=
+搜索：https://www.airav.wiki/api/video/list?lang=zh-TW&lng=zh-TW&search=
+'''
+host = 'https://www.airav.wiki'
 
 # airav这个网站没有演员图片，所以直接使用javbus的图
 def getActorPhoto(htmlcode): #//*[@id="star_qdt"]/li/a/img
@@ -61,15 +68,13 @@ def getRuntime(htmlcode): #获取分钟 已修改
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     result = str(html.xpath('/html/body/div[5]/div[1]/div[2]/p[3]/text()')).strip(" ['']分鐘")
     return result
-
 def getActor(htmlcode):   #获取女优
     b=[]
     soup=BeautifulSoup(htmlcode,'lxml')
-    a=soup.find_all(attrs={'class':'videoAvstarListItem'})
+    a=soup.find_all(attrs={'class':'star-name'})
     for i in a:
         b.append(i.get_text())
     return b
-
 def getNum(htmlcode):     #获取番号
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     result = str(html.xpath('/html/body/div[5]/div[1]/div[2]/p[1]/span[2]/text()')).strip(" ['']")
@@ -121,6 +126,44 @@ def getExtrafanart(htmlcode):  # 获取剧照
             return extrafanart_imgs
     return ''
 
+def search(keyword): #搜索，返回结果
+    result = []
+    page = 1
+    while page > 0:
+        # search_result = {"offset": 0,"count": 4,"result": [
+        #     {"vid": "99-07-15076","slug": "Wrop6o","name": "朝ゴミ出しする近所の遊び好きノーブラ奥さん 江波りゅう",
+        #     "url": "","view": 98,"img_url": "https://wiki-img.airav.wiki/storage/big_pic/99-07-15076.jpg","barcode": "_1pondo_012717_472"},
+        #     {"vid": "99-27-00286","slug": "DlPEua","name": "放課後に、仕込んでください 〜優等生は無言でスカートを捲り上げる〜",
+        #     "url": "","view": 69,"img_url": "https://wiki-img.airav.wiki/storage/big_pic/99-27-00286.jpg","barcode": "caribbeancom012717-360"},
+        #     {"vid": "99-07-15070","slug": "VLS3WY","name": "放課後に、仕込んでください ～優等生は無言でスカートを捲り上げる～ ももき希",
+        #     "url": "","view": 58,"img_url": "https://wiki-img.airav.wiki/storage/big_pic/99-07-15070.jpg","barcode": "caribbeancom_012717-360"},
+        #     {"vid": "99-27-00287","slug": "YdMVb3","name": "朝ゴミ出しする近所の遊び好きノーブラ奥さん 江波りゅう",
+        #     "url": "","view": 56,"img_url": "https://wiki-img.airav.wiki/storage/big_pic/99-27-00287.jpg","barcode": "1pondo_012717_472"}
+        # ],"status": "ok"}
+        search_result = get_html(host + '/api/video/list?lang=zh-TW&lng=jp&search=' + keyword + '&page=' + str(page))
+
+        try:
+            json_data = json.loads(search_result)
+        except json.decoder.JSONDecodeError:
+            print("[-]Json decoder error!")
+            return []
+
+        result_offset = int(json_data["offset"])
+        result_count = int(json_data["count"])
+        result_size = len(json_data["result"])
+        if result_count <= 0 or result_size <= 0:
+            return result
+        elif result_count > result_offset + result_size: #请求下一页内容
+            result.extend(json_data["result"])
+            page += 1
+        elif result_count == result_offset + result_size: #请求最后一页内容
+            result.extend(json_data["result"])
+            page = 0
+        else:
+            page = 0
+
+    return result
+
 def main(number):
     try:
         try:
@@ -145,7 +188,7 @@ def main(number):
             # 导演 使用javbus
             'director': getDirector(javbus_htmlcode),
             # 作者 使用airav
-            'actor': getActor(htmlcode),
+            'actor': getActor(javbus_htmlcode),
             # 发售日使用javbus
             'release': getRelease(javbus_htmlcode),
             # 番号使用javbus
@@ -180,5 +223,10 @@ def main(number):
 
 
 if __name__ == '__main__':
+    #print(main('ADN-188'))
+
     print(main('ADN-188'))
+    print(main('012717_472'))
+    print(main('080719-976'))
+    print(main('姫川ゆうな'))
 

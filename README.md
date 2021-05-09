@@ -1,4 +1,4 @@
-# AV Data Capture (CLI)
+<h1 align="center">AV Data Capture - CLI</h1>
 
 CLI 版本  
 ![](https://img.shields.io/badge/build-passing-brightgreen.svg?style=flat)
@@ -20,8 +20,8 @@ CLI 版本
 * [官方WIKI](https://github.com/yoshiko2/AV_Data_Capture/wiki)
 * [VergilGao's Docker部署](https://github.com/VergilGao/docker-avdc)
 
-# 版本发布
-* [Release](https://github.com/yoshiko2/AV_Data_Capture/releases)
+# 下载
+* [Releases](https://github.com/yoshiko2/AV_Data_Capture/releases)
 
 #  申明
 当你查阅、下载了本项目源代码或二进制程序，即代表你接受了以下条款
@@ -34,6 +34,7 @@ CLI 版本
 * 用户在使用本软件时，若用户在当地产生一切违法行为由用户承担
 * 严禁用户将本软件使用于商业和个人其他意图
 * 源代码和二进制程序请在下载后24小时内删除
+* 卖源码的死个妈
 * 本软件作者yoshiko2保留最终决定权和最终解释权
 * 若用户不同意上述条款任意一条，请勿使用本软件
 ---
@@ -50,20 +51,17 @@ When you view and download the source code or binary program of this project, it
 * The author of this software yoshiko2 reserves the right of final decision and final interpretation
 * If the user does not agree with any of the above terms, please do not use this software
 ---
-このプロジェクトのソースコードまたはバイナリプログラムを表示してダウンロードすると、次の条件に同意したことになります。
+本プロジェクトのソースコード、バイナリファイルをダウンロード、または表示することによって、あなたは次の規約に拘束されることに同意したことになります。
 
-* このソフトウェアは、技術交換、学術交換専用です。
-* **人気のソーシャルプラットフォームでこのプロジェクトを宣伝しないでください**
-* ソフトウェアの作成者は、Pythonを学習してプログラミングを改善するためにこのソフトウェアを作成しました
-* このソフトウェアは、ビデオダウンロードの手がかりを提供しません
-* 本ソフトウェアを使用する前に、現地の法令を理解し、遵守してください本ソフトウェアの使用中に現地の法令に違反する場合は、本ソフトウェアを使用しないでください
-* 本ソフトウェアをご利用の際、地域で違法行為を行った場合は、お客様の負担となります。
-* ユーザーがこのソフトウェアを商業的および個人的な目的で使用することは固く禁じられています
-* ダウンロード後24時間以内にソースコードとバイナリプログラムを削除してください
-* このソフトウェアの作者yoshiko2は、最終決定および最終解釈の権利を留保します。
-* ユーザーが上記の条件のいずれかに同意しない場合は、このソフトウェアを使用しないでください
-
-# Telegram讨论群
-* [点击进群](https://t.me/joinchat/J54y1g3-a7nxJ_-WS4-KFQ)
+* このソフトウェアは、開発技術学習することのみに使用できます。
+* **ソーシャルメディアで本プロジェクトの宣伝をご遠慮ください**
+* 作者はPythonの勉強と技術力の向上のために、このソフトウェアを作成しました
+* 本ソフトウェアは、動画ダウンロード機能一切提供しません
+* 本ソフトウェアを使用する前に、現地の法令をよく理解する必要があります。あなたは、適用される現地の法令を順守する責任を負います
+* 本ソフトウェアを使用した結果生じた損害や法的責任につきまして作者は一切責任を負いません
+* 本ソフトウェアを商用、業務、その他の営利目的のために使用することはできません
+* 本プロジェクトのソースコード、バイナリファイルをダウンロードした場合、24時間以内に削除してください
+* 最終解釈権は作者yoshiko2に属します
+* 本規約およびすべての適用法、規約および規則を遵守する場合にのみ本ソフトウェアを使用することができます
 
 

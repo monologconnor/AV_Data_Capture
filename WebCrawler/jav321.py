@@ -8,10 +8,13 @@ import re
 
 
 def main(number: str) -> json:
-    result = post_html(url="https://www.jav321.com/search", query={"sn": number})
-
-    soup = BeautifulSoup(result.text, "html.parser")
-    lx = html.fromstring(str(soup))
+    try:
+        result = post_html(url="https://www.jav321.com/search", query={"sn": number})
+        soup = BeautifulSoup(result.text, "html.parser")
+        lx = html.fromstring(str(soup))
+    except:
+        dic = {"title": ""}
+        return json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'))
 
     if "/video/" in result.url:
         data = parse_info(soup)
@@ -31,7 +34,7 @@ def main(number: str) -> json:
             **data,
         }
     else:
-        dic = {}
+        dic = {"title": ""}
 
     return json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'))
 
@@ -59,7 +62,7 @@ def parse_info(soup: BeautifulSoup) -> dict:
             "series": get_series(data_dic),
         }
     else:
-        return {}
+        return {"title": ""}
 
 
 def get_bold_text(h: str) -> str:
@@ -87,7 +90,7 @@ def get_trailer(html) -> str:
     videourl_pather = re.compile(r'<source src=\"(.*?)\"')
     videourl = videourl_pather.findall(html)
     if videourl:
-        url = videourl[0].replace('cc3001.r18.com', 'cc3001.dmm.co.jp')
+        url = videourl[0].replace('awscc3001.r18.com', 'cc3001.dmm.co.jp').replace('cc3001.r18.com', 'cc3001.dmm.co.jp')
         return url
     else:
         return ''
@@ -115,51 +118,51 @@ def get_series2(lx: html.HtmlElement) -> str:
 
 
 def get_actor(data: hash) -> str:
-    if "女优" in data:
-        return get_anchor_info(data["女优"])
+    if "出演者" in data:
+        return get_anchor_info(data["出演者"])
     else:
         return ""
 
 
 def get_label(data: hash) -> str:
-    if "片商" in data:
-        return get_anchor_info(data["片商"])
+    if "メーカー" in data:
+        return get_anchor_info(data["メーカー"])
     else:
         return ""
 
 
 def get_tag(data: hash) -> str:
-    if "标签" in data:
-        return get_anchor_info(data["标签"])
+    if "ジャンル" in data:
+        return get_anchor_info(data["ジャンル"])
     else:
         return ""
 
 
 
 def get_studio(data: hash) -> str:
-    if "片商" in data:
-        return get_anchor_info(data["片商"])
+    if "メーカー" in data:
+        return get_anchor_info(data["メーカー"])
     else:
         return ""
 
 
 def get_number(data: hash) -> str:
-    if "番号" in data:
-        return get_text_info(data["番号"])
+    if "品番" in data:
+        return get_text_info(data["品番"])
     else:
         return ""
 
 
 def get_release(data: hash) -> str:
-    if "发行日期" in data:
-        return get_text_info(data["发行日期"])
+    if "配信開始日" in data:
+        return get_text_info(data["配信開始日"])
     else:
         return ""
 
 
 def get_runtime(data: hash) -> str:
-    if "播放时长" in data:
-        return get_text_info(data["播放时长"])
+    if "収録時間" in data:
+        return get_text_info(data["収録時間"])
     else:
         return ""
 
@@ -172,8 +175,8 @@ def get_year(data: hash) -> str:
 
 
 def get_series(data: hash) -> str:
-    if "系列" in data:
-        return get_anchor_info(data["系列"])
+    if "シリーズ" in data:
+        return get_anchor_info(data["シリーズ"])
     else:
         return ""
 

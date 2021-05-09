@@ -77,6 +77,7 @@ def getCover_small(htmlcode, number, studio):
     # https://imgs02.aventertainments.com/archive/bigcover/dvd1cwpbd-46.jpg
     # https://imgs02.aventertainments.com/archive/bigcover/dvd1cwp-46.jpg
 
+    return ""
 
     if "1pondo" in studio:
         pass
@@ -136,6 +137,9 @@ def getSeries(htmlcode):
 
 def getOutline(html, studio):
     # studio = getStudio(html)
+
+    return ""
+    
     number = getNum(html)
 
     if "1pondo" in studio:
@@ -210,6 +214,7 @@ def main(number):
                 a = get_html(site + '/cn/search/' + number.replace('_', ''))
                 html = etree.fromstring(a, etree.HTMLParser())  # //table/tr[1]/td[1]/text()
                 result1 = str(html.xpath('//*[@id="waterfall"]/div/a/@href')).strip(" ['']")
+        print("Heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
         web = get_html(result1)
         soup = BeautifulSoup(web, 'lxml')
         info = str(soup.find(attrs={'class': 'row movie'}))
@@ -243,14 +248,9 @@ def main(number):
             'source': 'avsox.py',
             'series': getSeries(info),
         }
-        js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
-
     except:
-        data = {
-            'title': "",
-        }
-        js = json.dumps(data, ensure_ascii=False, sort_keys=True, indent=4, separators=(",", ":"))
-    
+        dic = {"title": ""}
+    js = json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'), )  # .encode('UTF-8')
     return js
 
 if __name__ == "__main__":

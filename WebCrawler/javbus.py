@@ -9,6 +9,7 @@ from ADC_function import *
 from WebCrawler import fanza
 from WebCrawler import javdb
 from WebCrawler import amazon
+from WebCrawler import airav
 
 def getActorPhoto(htmlcode): #//*[@id="star_qdt"]/li/a/img
     soup = BeautifulSoup(htmlcode, 'lxml')
@@ -103,10 +104,10 @@ def getCID(htmlcode):
     string = html.xpath("//a[contains(@class,'sample-box')][1]/@href")[0].replace('https://pics.dmm.co.jp/digital/video/','')
     result = re.sub('/.*?.jpg','',string)
     return result
-def getOutline(htmlcode):  #获取演员
-    html = etree.fromstring(htmlcode, etree.HTMLParser())
+def getOutline(number):  #获取演员
     try:
-        result = html.xpath("string(//div[contains(@class,'mg-b20 lh4')])").replace('\n','')
+        response = json.loads(airav.main(number))
+        result = response['outline']
         return result
     except:
         return ''
@@ -126,7 +127,7 @@ def getTag(htmlcode):  # 获取标签
     soup = BeautifulSoup(htmlcode, 'lxml')
     a = soup.find_all(attrs={'class': 'genre'})
     for i in a:
-        if 'onmouseout' in str(i):
+        if 'onmouseout' in str(i) or '多選提交' in str(i):
             continue
         tag.append(translateTag_to_sc(i.get_text()))
     return tag
