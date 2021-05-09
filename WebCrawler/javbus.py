@@ -24,13 +24,19 @@ def getActorPhoto(htmlcode): #//*[@id="star_qdt"]/li/a/img
         d.update(p2)
     return d
 def getTitle(htmlcode):  #获取标题
-    doc = pq(htmlcode)
-    title=str(doc('div.container h3').text()).replace(' ','-')
-    try:
-        title2 = re.sub('n\d+-','',title)
-        return title2
-    except:
-        return title
+    # doc = pq(htmlcode)
+    # title=str(doc('div.container h3').text()).replace(' ','-')
+    # try:
+    #     title2 = re.sub('n\d+-','',title)
+    #     return title2
+    # except:
+    #     return title
+
+    html = etree.fromstring(htmlcode, etree.HTMLParser())
+    title = html.xpath("//*[@id='title']/text()")
+
+    return title
+
 def getStudio(htmlcode): #获取厂商 已修改
     html = etree.fromstring(htmlcode,etree.HTMLParser())
     # 如果记录中冇导演，厂商排在第4位
@@ -104,13 +110,17 @@ def getCID(htmlcode):
     string = html.xpath("//a[contains(@class,'sample-box')][1]/@href")[0].replace('https://pics.dmm.co.jp/digital/video/','')
     result = re.sub('/.*?.jpg','',string)
     return result
-def getOutline(number):  #获取演员
+def getOutline(htmlcode):  #获取演员
     try:
-        response = json.loads(airav.main(number))
-        result = response['outline']
-        return result
+        # response = json.loads(airav.main(number))
+        # result = response['outline']
+        # return result
+        html = etree.fromstring(htmlcode, etree.HTMLParser())
+        result = html.xpath("string(//div[contains(@class,'mg-b20 lh4')])").replace('\n','')
     except:
-        return ''
+        result = ''
+        
+    return result
 def getSerise(htmlcode):   #获取系列 已修改
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     # 如果记录中冇导演，系列排在第6位
@@ -238,9 +248,9 @@ def main(number):
             dww_htmlcode = fanza.main_htmlcode(getCID(htmlcode))
         except:
             dww_htmlcode = ''
-        title = str(re.sub('\w+-\d+-', '', getTitle(htmlcode)))
+        # title = str(re.sub('\w+-\d+-', '', getTitle(htmlcode)))
         dic = {
-            'title': title,
+            'title': getTitle(dww_htmlcode),
             'studio': getStudio(htmlcode),
             'year': str(re.search('\d{4}', getYear(htmlcode)).group()),
             'outline': getOutline(dww_htmlcode),
@@ -282,4 +292,5 @@ def main(number):
         return js
 
 if __name__ == "__main__" :
-    print(main('IPX-292'))
+    # print(main('IPX-292'))
+    print(main('SSNI-830'))

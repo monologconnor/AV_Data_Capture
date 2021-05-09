@@ -134,4 +134,6 @@ if __name__ == "__main__":
     # html = main("アイベヤ THE ANIMATION")
     # html = main("SSNI-830 股下3センチ美脚タイトミニスカナースの誘惑 星宮一花")
     amazon_url = getUrl_html("股下3センチ美脚タイトミニスカナースの誘惑 星宮一花")
+    html = etree.fromstring(amazon_url, etree.HTMLParser())
+    print(getOutline(html))
     pass
