@@ -64,7 +64,7 @@ def getCover_small(cid):
     result = f"https://pics.dmm.co.jp/digital/video/{cid}/{cid}ps.jpg"
     return result
 
-def getCover_small_by_title(title):
+def getCover_small_by_amazon(title):
     return amazon.getCover_small_by_title(title)
 
 def getTrailer(number):
@@ -121,6 +121,14 @@ def getOutline(htmlcode):  #获取演员
         result = ''
         
     return result
+
+def getOutline_by_amazon(htmlcode):
+    html = etree.fromstring(htmlcode, etree.HTMLParser())
+
+    result = amazon.getOutline(html)
+    return result
+
+
 def getSerise(htmlcode):   #获取系列 已修改
     html = etree.fromstring(htmlcode, etree.HTMLParser())
     # 如果记录中冇导演，系列排在第6位
@@ -248,20 +256,25 @@ def main(number):
             dww_htmlcode = fanza.main_htmlcode(getCID(htmlcode))
         except:
             dww_htmlcode = ''
+        title = getTitle(dww_htmlcode)
+        try:
+            amazon_htmlcode = amazon.getUrl_html(title)
+        except:
+            amazon_htmlcode = ''
         # title = str(re.sub('\w+-\d+-', '', getTitle(htmlcode)))
         title = getTitle(dww_htmlcode)
         dic = {
             'title': title,
             'studio': getStudio(htmlcode),
             'year': str(re.search('\d{4}', getYear(htmlcode)).group()),
-            'outline': getOutline(dww_htmlcode),
+            'outline': getOutline_by_amazon(amazon_htmlcode),
             'runtime': getRuntime(htmlcode),
             'director': getDirector(htmlcode),
             'actor': getActor(htmlcode),
             'release': getRelease(htmlcode),
             'number': getNum(htmlcode),
             'cover': getCover(htmlcode),
-            'cover_small': getCover_small_by_title(title),
+            'cover_small': getCover_small_by_amazon(title),
             'thumb': getThumb(cid, htmlcode),
             'trailer': getTrailer(number),
             'imagecut': 3,
