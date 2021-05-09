@@ -249,8 +249,9 @@ def main(number):
         except:
             dww_htmlcode = ''
         # title = str(re.sub('\w+-\d+-', '', getTitle(htmlcode)))
+        title = getTitle(dww_htmlcode)
         dic = {
-            'title': getTitle(dww_htmlcode),
+            'title': title,
             'studio': getStudio(htmlcode),
             'year': str(re.search('\d{4}', getYear(htmlcode)).group()),
             'outline': getOutline(dww_htmlcode),
