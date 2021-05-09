@@ -33,7 +33,7 @@ def getTitle(htmlcode):  #获取标题
     #     return title
 
     html = etree.fromstring(htmlcode, etree.HTMLParser())
-    title = html.xpath("//*[@id='title']/text()")
+    title = html.xpath("//*[@id='title']/text()")[0]
 
     return title
 
